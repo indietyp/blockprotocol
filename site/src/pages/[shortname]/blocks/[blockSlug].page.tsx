@@ -13,38 +13,14 @@ import { useRouter } from "next/router";
 import React, { useMemo, VoidFunctionComponent } from "react";
 import { formatDistance } from "date-fns";
 import { BlocksSlider } from "../../../components/BlocksSlider";
-import {
-  blockDependencies,
-  BlockDependency,
-  BlockExports,
-  BlockSchema,
-} from "../../../components/pages/hub/HubUtils";
+import { BlockSchema } from "../../../components/pages/hub/HubUtils";
 import {
   readBlocksFromDisk,
   readBlockDataFromDisk,
   ExpandedBlockMetadata as BlockMetadata,
 } from "../../../lib/blocks";
-import { BlockDataContainer } from "../../../components/pages/hub/BlockDataContainer";
 import { Link } from "../../../components/Link";
-
-const blockRequire = (name: BlockDependency) => {
-  if (!(name in blockDependencies)) {
-    throw new Error(`missing dependency ${name}`);
-  }
-
-  return blockDependencies[name];
-};
-
-const blockEval = (source: string): BlockExports => {
-  const exports_ = {};
-  const module_ = { exports: exports_ };
-
-  // eslint-disable-next-line no-new-func
-  const moduleFactory = new Function("require", "module", "exports", source);
-  moduleFactory(blockRequire, module_, exports_);
-
-  return module_.exports as BlockExports;
-};
+import { BlockFramer } from "../../../components/pages/hub/sandbox/BlockFramer/BlockFramer";
 
 const Bullet: VoidFunctionComponent = () => {
   return (
@@ -150,14 +126,6 @@ const BlockPage: NextPage<BlockPageProps> = ({
     ? new URL(blockMetadata.repository)
     : null;
 
-  const blockModule = useMemo(
-    () =>
-      typeof window === "undefined"
-        ? undefined
-        : blockEval(blockStringifiedSource),
-    [blockStringifiedSource],
-  );
-
   const theme = useTheme();
 
   const md = useMediaQuery(theme.breakpoints.up("md"));
@@ -166,6 +134,15 @@ const BlockPage: NextPage<BlockPageProps> = ({
   const sliderItems = useMemo(() => {
     return catalog.filter(({ name }) => name !== blockMetadata.name);
   }, [catalog, blockMetadata]);
+
+  const blockInitData = useMemo(
+    () => ({
+      metadata: blockMetadata,
+      schema,
+      stringifiedSource: blockStringifiedSource,
+    }),
+    [blockMetadata, blockStringifiedSource, schema],
+  );
 
   return (
     <>
@@ -281,11 +258,7 @@ const BlockPage: NextPage<BlockPageProps> = ({
         </Box>
 
         <Box sx={{ mb: 10 }}>
-          <BlockDataContainer
-            metadata={blockMetadata}
-            schema={schema}
-            blockModule={blockModule}
-          />
+          <BlockFramer blockInitData={blockInitData} />
         </Box>
 
         {blockRepositoryUrl && (

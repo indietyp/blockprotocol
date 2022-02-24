@@ -1,5 +1,8 @@
 // @ts-check
 
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   pageExtensions: ["page.ts", "page.tsx", "api.ts"],
@@ -33,6 +36,26 @@ const nextConfig = {
         permanent: true,
       },
     ];
+  },
+
+  webpack: (webpackConfig) => {
+    //  Build the sandbox HTML, which will have the sandbox script injected
+    const framedBlockFolder = "/src/components/pages/hub/sandbox/FramedBlock";
+    webpackConfig.plugins.push(
+      new HtmlWebpackPlugin({
+        filename: "static/sandbox.html",
+        template: path.join(__dirname, framedBlockFolder, "index.html"),
+        chunks: ["blockSandbox"],
+      }),
+    );
+    return {
+      ...webpackConfig,
+      entry: () =>
+        webpackConfig.entry().then((entry) => ({
+          ...entry,
+          blockSandbox: path.join(__dirname, framedBlockFolder, "index.tsx"),
+        })),
+    };
   },
 };
 
