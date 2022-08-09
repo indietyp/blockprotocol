@@ -16,5 +16,5 @@ test("Playwright cookies on multiple pages", async ({ page, context }) => {
 
   // eslint-disable-next-line no-console
   console.log({ cookie, cookie2 });
-  expect(cookie).toMatch(cookie2);
+  expect(cookie).toEqual(cookie2);
 });
