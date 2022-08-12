@@ -261,7 +261,7 @@ The content of `data` and the permissible codes under `errors` are left to servi
   - MUST include the `source`, which MUST be one of `"block"` or `"embedder"`
   - MUST contain one or both of `data` and `errors`
     - `data` may be any type of JSON value (string, object, null, etc)
-    - `errors` MUST be an array of objects, each of which MUST have a `code` and `message` – both strings – and MAY have `extensions`, an arbitrary JSON object defined by the service specification. Valid error codes are defined per message, in an `errorCodes` property in [the message definition](#messages-error-codes)
+    - `errors` MUST be an array of objects, each of which MUST have a `code` and `message` – both strings – and MAY have `extensions`, an arbitrary JSON object defined by the service specification. Valid error codes are defined per message, in an `errorCodes` property in [the message definition](#messages-error-codes), in addition to error codes valid for ALL messages defined in the [processing messages](#processing-messages) section of this specification.
 
 Messages MUST therefore be an object which conforms to the following schema:
 
@@ -491,8 +491,11 @@ An entry in `messages` MAY specify:
 - `respondedToBy`: a `string`, which names another entry in `messages`. The presence of this indicates this message is part of a request/response pair
 - `sentOnInitialization`: whether this message will be sent immediately when the block is initialized, in response to the `"initRequest"` message (and provided as properties synchronously to blocks which support it). Note that such messages may also be sent after intialization, e.g. if their data changes
 - <span id="messages-error-codes">`errorCodes`</span>: valid codes for any
-  errors encountered in producing the message data. this may appear alongside or
-  instead of `data` in the message contents.
+  errors encountered in producing the message data (error codes defined in the
+  core specification SHOULD NOT be repeated here – their validity is not
+  message-specific but condition-specific as described
+  [here](#processing-messages)). this may appear alongside or instead of `data`
+  in the message contents.
 
 ### JSON Schema for Service Specification
 
