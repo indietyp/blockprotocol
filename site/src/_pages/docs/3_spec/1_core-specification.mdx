@@ -312,6 +312,34 @@ Messages MUST therefore be an object which conforms to the following schema:
 
 The `data` and `errors` of any messages exchanged between applications and blocks, and not described in [Core messages](#core-messages), MUST be described in separate [service specifications](#defining-services).
 
+### Processing messages
+
+#### <Hidden>Processing messages </Hidden>Overview
+
+Messages can be sent from applications to blocks, or from blocks to applications.
+
+Each should process any valid message sent to them according to the functionality described in the relevant specification.
+
+Where messages expect a response, one should be provided.
+
+Embedding applications and blocks need not implement logic for handling every service, or every message in every service.
+
+#### <Hidden>Processing messages </Hidden>Specification
+
+Where an embedding application or a block processes a particular message, they MUST process it in a way
+which is consistent with the description of its intended functionality in the relevant service specification.
+
+If a block or an embedding application receives a message with a `service` that they do not recognise or do not implement,
+they MUST respond with an error with a `code` of `NOT_IMPLEMENTED`.
+
+If a block or an embedding application receives a message with a `service` that they do implement, but a message `name`
+that they do not, they SHOULD ignore the message.
+
+For completeness, the following messages also SHOULD be ignored:
+
+- messages with a `name` that is not listed in the relevant `service` specification
+- messages that match the source of the receiver, i.e. a block MAY ignore messages with `source: "block"`
+
 ### Core messages
 
 #### <Hidden>Core messages </Hidden>Overview
@@ -438,7 +466,7 @@ Messages are listed under in the `messages` key of the JSON file which defines t
 
 #### <Hidden>Messages </Hidden>Specification
 
-A service specification SHOULD include any messages to be sent as part of the service under a `messages` key on the JSON file defining the service.
+A service specification MUST include any messages to be sent as part of the service under a `messages` key on the JSON file defining the service.
 
 The value of `messages` should be an array of JSON objects.
 
