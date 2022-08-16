@@ -1,5 +1,5 @@
 {
-  "name": "type-system",
+  "name": "type-system-block",
   "version": "0.0.0",
   "description": "type-system block",
   "keywords": [
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@blockprotocol/graph": "0.0.12",
-    "@blockprotocol/type-system": "../type-system"
+    "@blockprotocol/type-system": "0.0.0"
   },
   "devDependencies": {
     "block-scripts": "0.0.14",
