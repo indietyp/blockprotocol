@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { ValidationError } from "express-validator";
 
+import { ApiBlockSearchResponse } from "../pages/api/blocks.api";
 import {
   ApiLoginWithLoginCodeRequestBody,
   ApiLoginWithLoginCodeResponse,
@@ -73,16 +74,33 @@ const handleAxiosError = (
 const get = <ResponseData = any, RequestParams = any>(
   url: string,
   requestParams?: RequestParams,
+  requiresApiKey?: boolean,
 ): Promise<{
   data?: ResponseData;
   error?: ApiClientError;
-}> =>
-  axiosClient
+}> => {
+  if (requiresApiKey && typeof window !== "undefined") {
+    throw new Error(
+      `Request to ${url} requires an API key and can only be called on a server render`,
+    );
+  }
+  const apiKey = process.env.BLOCK_PROTOCOL_API_KEY;
+  if (requiresApiKey && !apiKey) {
+    throw new Error(
+      `Request to ${url} requires BLOCK_PROTOCOL_API_KEY in environment`,
+    );
+  }
+
+  const headers = requiresApiKey ? { "x-api-key": apiKey! } : undefined;
+
+  return axiosClient
     .get<ResponseData>(url, {
+      headers,
       params: requestParams,
     })
     .then(({ data }) => ({ data }))
     .catch(handleAxiosError);
+};
 
 const post = <RequestData = any, ResponseData = any>(
   url: string,
@@ -127,6 +145,7 @@ export const apiClient = {
       "me/generate-api-key",
       requestData,
     ),
+  getBlocks: () => apiClient.get<ApiBlockSearchResponse>("/blocks", {}, true),
   getUserApiKeys: () => apiClient.get<ApiKeysResponse>("me/api-keys"),
   getUser: ({ shortname }: { shortname: string }) =>
     apiClient.get<ApiUserByShortnameResponse>(`users/${shortname}`),
