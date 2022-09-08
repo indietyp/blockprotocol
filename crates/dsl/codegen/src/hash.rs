@@ -19,12 +19,10 @@ impl Display for HashError {
 
 impl std::error::Error for HashError {}
 
-pub(crate) fn hash_file(path: &Path) -> Result<Digest, HashError> {
+pub(crate) fn hash_reader<R: Read>(mut reader: R) -> Result<Digest, HashError> {
     let mut context = Context::new(&SHA256);
     let mut buffer = [0; 1024];
 
-    let file = File::open(path).into_report().change_context(HashError)?;
-    let mut reader = BufReader::new(file);
     loop {
         let count = reader
             .read(&mut buffer)
@@ -39,6 +37,13 @@ pub(crate) fn hash_file(path: &Path) -> Result<Digest, HashError> {
     }
 
     Ok(context.finish())
+}
+
+pub(crate) fn hash_file(path: &Path) -> Result<Digest, HashError> {
+    let file = File::open(path).into_report().change_context(HashError)?;
+    let reader = BufReader::new(file);
+
+    hash_reader(reader)
 }
 
 fn hex_from_digit(num: u8) -> char {

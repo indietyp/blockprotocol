@@ -1,68 +1,68 @@
 [kind.colon]
-literal = ":"
+token = ":"
 
 [kind.dot]
-literal = "."
+token = "."
 
 [kind.question-mark]
-literal = "?"
+token = "?"
 
 [kind.equals]
-literal = "="
+token = "="
 
 [kind.greater-than]
-literal = ">"
+token = ">"
 
 [kind.less-than]
-literal = "<"
+token = "<"
 
 [kind.plus]
-literal = "+"
+token = "+"
 
 [kind.minus]
-literal = "-"
+token = "-"
 
 [kind.star]
-literal = "*"
+token = "*"
 
 [kind.slash]
-literal = "/"
+token = "/"
 
 [kind.pipe]
-literal = "|"
+token = "|"
 
 [kind.at]
-literal = "@"
+token = "@"
 
 [kind.hash]
-literal = "#"
+token = "#"
 
 [kind.ampersand]
-literal = "&"
+token = "&"
 
 [kind.semicolon]
-literal = ";"
+token = ";"
 
 [kind.comma]
-literal = ","
+token = ","
 
 [kind.lbrace]
-literal = "{"
+token = "{"
 
 [kind.rbrace]
-literal = "}"
+token = "}"
 
 [kind.lparen]
-literal = "("
+token = "("
 
 [kind.rparen]
-literal = ")"
+token = ")"
 
 [kind.lbracket]
-literal = "["
+token = "["
 
 [kind.rbracket]
-literal = "]"
+token = "]"
 
 [kind.ident]
 regex = ["[a-zA-Z][a-zA-Z0-9-]*"]
@@ -78,10 +78,10 @@ regex = ["[+-]?(([1-9][0-9]*)|0)\\.[0-9]+"]
 priority = 12
 
 [kind.kw-true]
-literal = "true"
+token = "true"
 
 [kind.kw-false]
-literal = "false"
+token = "false"
 
 [kind.whitespace]
 regex = ["\\s"]

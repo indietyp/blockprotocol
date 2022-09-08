@@ -12,3 +12,4 @@ error-stack = { git = "https://github.com/hashintel/hash.git" }
 
 serde = { version = "1.0.144", features = ['derive'] }
 toml = "0.5.9"
+indexmap = { version = "1.9.1", features = ['serde'] }

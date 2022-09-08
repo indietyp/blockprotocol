@@ -2,9 +2,12 @@ use std::fmt::{Display, Formatter};
 
 use error_stack::ResultExt;
 
-mod config;
+use crate::config::Config;
+
+pub(crate) mod config;
 mod hash;
 mod lexer;
+mod util;
 
 #[derive(Debug)]
 struct Error;
@@ -18,7 +21,9 @@ impl Display for Error {
 impl std::error::Error for Error {}
 
 fn main() -> error_stack::Result<(), Error> {
-    lexer::check().change_context(Error)?;
+    let config = Config::load().change_context(Error)?;
+
+    lexer::generate(&config).change_context(Error)?;
 
     Ok(())
 }

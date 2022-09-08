@@ -1,34 +1,118 @@
 use std::{
-    fmt::{Display, Formatter, Write},
-    path::Path,
+    fmt::{Display, Formatter},
+    fs::File,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Command,
 };
 
-use error_stack::{IntoReport, IteratorExt, Report, Result, ResultExt};
-use quote::quote;
+use error_stack::{IntoReport, Report, Result, ResultExt};
+use quote::{__private::TokenStream, quote};
 
-use crate::hash::{hash_file, to_hex};
+use crate::{
+    config,
+    config::Config,
+    hash::{hash_file, to_hex},
+    util::camel_case_to_pascal_case,
+};
 
 const DISCLAIMER: &str = "//! THIS FILE HAS BEEN AUTOMATICALLY GENERATED";
 const PREFIX: &str = "//! GENERATED WITH ";
 
 #[derive(Debug)]
+pub(crate) enum WriteError {
+    Io,
+    Hash,
+    Check,
+    Fmt,
+}
+
+impl Display for WriteError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            WriteError::Io => {
+                f.write_str("while trying to write to `lexer/src/kind.rs` an io error occurred")
+            }
+            WriteError::Hash => f.write_str("unable to hash contents"),
+            WriteError::Check => {
+                f.write_str("searching for the `lexer/src/kind.rs` was not possible")
+            }
+            WriteError::Fmt => f.write_str("error while running `rustfmt` over the generated code"),
+        }
+    }
+}
+
+impl std::error::Error for WriteError {}
+
+fn path() -> Result<PathBuf, CheckError> {
+    let env = option_env!("CARGO_MANIFEST_DIR").ok_or_else(|| Report::new(CheckError::NotCargo))?;
+
+    let path = Path::new(env)
+        .parent()
+        .ok_or_else(|| Report::new(CheckError::Path))?;
+
+    Ok(path.join("lexer/src/kind.rs"))
+}
+
+fn write(stream: TokenStream) -> Result<(), WriteError> {
+    let path = path().change_context(WriteError::Check)?;
+
+    let stream = stream.to_string();
+
+    let mut file = File::create(&path)
+        .into_report()
+        .change_context(WriteError::Io)?;
+
+    let hash = config::path()
+        .ok_or(CheckError::NotCargo)
+        .into_report()
+        .change_context(WriteError::Check)?;
+
+    let digest = hash_file(&hash).change_context(WriteError::Hash)?;
+    let hash = to_hex(digest.as_ref());
+
+    let contents = format!("{DISCLAIMER}\n{PREFIX}{hash}\n\n{stream}");
+
+    file.write_all(contents.as_bytes())
+        .into_report()
+        .change_context(WriteError::Io)?;
+
+    file.flush().into_report().change_context(WriteError::Io)?;
+    // make sure we dropped the file before we format
+    drop(file);
+
+    let out = Command::new("sh")
+        .arg("-c")
+        .arg(format!("cargo fmt -- {}", path.to_str().unwrap()))
+        .output()
+        .into_report()
+        .change_context(WriteError::Fmt)?;
+
+    println!("{out:?}");
+
+    Ok(())
+}
+
+#[derive(Debug)]
 pub(crate) enum GenerationError {
     Check,
+    Write,
 }
 
 impl Display for GenerationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             GenerationError::Check => {
-                f.write_str("while trying to check `lexer.rs` an issue occurred")
+                f.write_str("while trying to check `lexer/src/kind.rs` an issue occurred")
             }
+            GenerationError::Write => f.write_str("writing of the file failed"),
         }
     }
 }
 
 impl std::error::Error for GenerationError {}
 
-fn generate() -> Result<(), GenerationError> {
+pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     let check = check().change_context(GenerationError::Check)?;
     if check {
         // the contents haven't changed so we don't need to regenerate
@@ -37,17 +121,49 @@ fn generate() -> Result<(), GenerationError> {
 
     let imports = quote!(
         use logos::Logos;
-        use num_derive::{FromPrimitive, ToPrimitive}
+        use num_derive::{FromPrimitive, ToPrimitive};
     );
+
+    let entries = config.kind.iter().map(|(key, kind)| {
+        let token = if let Some(token) = &kind.token {
+            quote!(#[token(#token)])
+        } else {
+            quote!()
+        };
+
+        let regex = if let Some(regex) = &kind.regex {
+            let regex = regex.iter().map(|regex| quote!(#[regex(#regex)]));
+
+            quote!(#(#regex)*)
+        } else {
+            quote!()
+        };
+
+        let name = camel_case_to_pascal_case(key);
+        let name = quote::format_ident!("{name}");
+
+        quote!(
+            #token
+            #regex
+            #name
+        )
+    });
 
     let kinds = quote!(
         #[derive(Logos, Debug, PartialEq, ToPrimitive, Copy, Clone)]
         pub enum Kind {
-            // TODO
+            #(#entries),*
         }
     );
 
-    todo!()
+    // TODO: impl like is_trivia and display
+
+    let stream = quote! {
+        #imports
+        #kinds
+    };
+
+    write(stream).change_context(GenerationError::Write)
 }
 
 #[derive(Debug)]
@@ -74,13 +190,7 @@ impl Display for CheckError {
 impl std::error::Error for CheckError {}
 
 pub(crate) fn check() -> Result<bool, CheckError> {
-    let env = option_env!("CARGO_MANIFEST_DIR").ok_or_else(|| Report::new(CheckError::NotCargo))?;
-
-    let path = Path::new(env)
-        .parent()
-        .ok_or_else(|| Report::new(CheckError::Path))?;
-
-    let path = path.join("lexer/src/kind.rs");
+    let path = path()?;
 
     if path.exists() {
         let contents = std::fs::read_to_string(path.as_path())
@@ -101,7 +211,9 @@ pub(crate) fn check() -> Result<bool, CheckError> {
             Some(hash) => {
                 // SAFETY: previous arm guarantees that there's a prefix
                 let actual = hash.strip_prefix(PREFIX).unwrap();
-                let expected = hash_file(path.as_path()).change_context(CheckError::Hash)?;
+                let expected =
+                    hash_file(&config::path().ok_or(CheckError::NotCargo).into_report()?)
+                        .change_context(CheckError::Hash)?;
                 let expected = to_hex(expected.as_ref());
 
                 Ok(actual == expected)
