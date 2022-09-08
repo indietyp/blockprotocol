@@ -1,6 +1,9 @@
 [kind.colon]
 literal = ":"
 
+[kind.dot]
+literal = "."
+
 [kind.question-mark]
 literal = "?"
 
@@ -85,3 +88,50 @@ regex = ["\\s"]
 
 [kind.comment]
 regex = ["//.*"]
+
+[syntax.data-stmt]
+[syntax.prop-stmt]
+[syntax.link-stmt]
+[syntax.entity-stmt]
+[syntax.let-stmt]
+[syntax.use-stmt]
+[syntax.set-stmt] # TODO: consider removing this (only used for configuration?!)
+
+# TODO: this still uses `=`
+[syntax.alias-data-stmt]
+[syntax.alias-prop-stmt]
+[syntax.alias-link-stmt]
+[syntax.alias-entity-stmt]
+
+[syntax.record-expr]
+[syntax.record-expr-entry]
+[syntax.literal-expr]
+# this is special, because a string might be prefixed and suffixed by an identifier
+[syntax.string-expr]
+[syntax.map-expr]
+[syntax.list-expr]
+[syntax.module-expr]
+[syntax.paren-expr]
+[syntax.infix-expr]
+[syntax.prefix-expr]
+[syntax.postfix-expr]
+[syntax.tuple-expr]
+[syntax.range-expr]
+
+# TODO: use `:` for types instead of the stmt level
+[syntax.union-type]
+[syntax.record-type]
+[syntax.record-type-entry]
+[syntax.list-type]
+[syntax.map-type]
+[syntax.tuple-type]
+
+[syntax.reference]
+[syntax.variable]
+
+[syntax.comment-doc]
+[syntax.attribute]
+
+# TODO: function expression and such
+[syntax.call-expr]
+[syntax.call-args]
