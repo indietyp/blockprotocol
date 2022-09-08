@@ -1,77 +1,87 @@
-[token.colon]
+[kind.colon]
 literal = ":"
 
-[token.question-mark]
+[kind.question-mark]
 literal = "?"
 
-[token.equals]
+[kind.equals]
 literal = "="
 
-[token.greater-than]
+[kind.greater-than]
 literal = ">"
 
-[token.less-than]
+[kind.less-than]
 literal = "<"
 
-[token.plus]
+[kind.plus]
 literal = "+"
 
-[token.minus]
+[kind.minus]
 literal = "-"
 
-[token.star]
+[kind.star]
 literal = "*"
 
-[token.slash]
+[kind.slash]
 literal = "/"
 
-[token.pipe]
+[kind.pipe]
 literal = "|"
 
-[token.ampersand]
+[kind.at]
+literal = "@"
+
+[kind.hash]
+literal = "#"
+
+[kind.ampersand]
 literal = "&"
 
-[token.semicolon]
+[kind.semicolon]
 literal = ";"
 
-[token.comma]
+[kind.comma]
 literal = ","
 
-[token.lbrace]
+[kind.lbrace]
 literal = "{"
 
-[token.rbrace]
+[kind.rbrace]
 literal = "}"
 
-[token.lparen]
+[kind.lparen]
 literal = "("
 
-[token.rparen]
+[kind.rparen]
 literal = ")"
 
-[token.lbracket]
+[kind.lbracket]
 literal = "["
 
-[token.rbracket]
+[kind.rbracket]
 literal = "]"
 
-[token.ident]
+[kind.ident]
 regex = ["[a-zA-Z][a-zA-Z0-9-]*"]
 
-[token.string]
+[kind.string]
 regex = ['"(?:[^\\"]|\\.)*"', "'(?:[^\\\\']|\\.)*'"]
 
-[token.integer]
+[kind.integer]
 regex = ["[+-]?(([1-9][0-9]*)|0)"]
 
-[token.number]
+[kind.number]
 regex = ["[+-]?(([1-9][0-9]*)|0)\\.[0-9]+"]
+priority = 12
 
-[token.kw-true]
+[kind.kw-true]
 literal = "true"
 
-[token.kw-false]
+[kind.kw-false]
 literal = "false"
 
-[token.whitespace]
+[kind.whitespace]
 regex = ["\\s"]
+
+[kind.comment]
+regex = ["//.*"]
