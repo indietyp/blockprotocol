@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH AF179FDBFDC76D11CFD8B9E09BDCEB12A26E23EA8A9CBC5D31B2C804B5B73999
+//! GENERATED WITH 067039914CF80EADCCC646D195DC52ED4515DECE4D891E78A37C0178D3A4ACF1
 
 use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
@@ -38,17 +38,17 @@ pub enum Kind {
     #[token(",")]
     Comma,
     #[token("{")]
-    Lbrace,
+    LBrace,
     #[token("}")]
-    Rbrace,
+    RBrace,
     #[token("(")]
-    Lparen,
+    LParen,
     #[token(")")]
-    Rparen,
+    RParen,
     #[token("[")]
-    Lbracket,
+    LBracket,
     #[token("]")]
-    Rbracket,
+    RBracket,
     #[regex("[a-zA-Z][a-zA-Z0-9-]*")]
     Ident,
     #[regex("\"(?:[^\\\\\"]|\\\\.)*\"")]

@@ -46,22 +46,22 @@ token = ";"
 [kind.comma]
 token = ","
 
-[kind.lbrace]
+[kind.l-brace]
 token = "{"
 
-[kind.rbrace]
+[kind.r-brace]
 token = "}"
 
-[kind.lparen]
+[kind.l-paren]
 token = "("
 
-[kind.rparen]
+[kind.r-paren]
 token = ")"
 
-[kind.lbracket]
+[kind.l-bracket]
 token = "["
 
-[kind.rbracket]
+[kind.r-bracket]
 token = "]"
 
 [kind.ident]
