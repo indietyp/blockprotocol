@@ -21,6 +21,7 @@ impl Display for Error {
 impl std::error::Error for Error {}
 
 fn main() -> error_stack::Result<(), Error> {
+    // TODO: cleanup and check (clap) + Makefile.toml
     let config = Config::load().change_context(Error)?;
 
     lexer::generate(&config).change_context(Error)?;
