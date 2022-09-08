@@ -13,6 +13,24 @@ literal = ">"
 [token.less-than]
 literal = "<"
 
+[token.plus]
+literal = "+"
+
+[token.minus]
+literal = "-"
+
+[token.star]
+literal = "*"
+
+[token.slash]
+literal = "/"
+
+[token.pipe]
+literal = "|"
+
+[token.ampersand]
+literal = "&"
+
 [token.semicolon]
 literal = ";"
 
@@ -54,3 +72,6 @@ literal = "true"
 
 [token.kw-false]
 literal = "false"
+
+[token.whitespace]
+regex = ["\\s"]
