@@ -9,3 +9,6 @@ edition = "2021"
 quote = "1.0.21"
 ring = "0.17.0-alpha.11"
 error-stack = { git = "https://github.com/hashintel/hash.git" }
+
+serde = { version = "1.0.144", features = ['derive'] }
+toml = "0.5.9"

@@ -2,8 +2,9 @@ use std::fmt::{Display, Formatter};
 
 use error_stack::ResultExt;
 
-mod lexer;
+mod config;
 mod hash;
+mod lexer;
 
 #[derive(Debug)]
 struct Error;
