@@ -1,0 +1,56 @@
+[token.colon]
+literal = ":"
+
+[token.question-mark]
+literal = "?"
+
+[token.equals]
+literal = "="
+
+[token.greater-than]
+literal = ">"
+
+[token.less-than]
+literal = "<"
+
+[token.semicolon]
+literal = ";"
+
+[token.comma]
+literal = ","
+
+[token.lbrace]
+literal = "{"
+
+[token.rbrace]
+literal = "}"
+
+[token.lparen]
+literal = "("
+
+[token.rparen]
+literal = ")"
+
+[token.lbracket]
+literal = "["
+
+[token.rbracket]
+literal = "]"
+
+[token.ident]
+regex = ["[a-zA-Z][a-zA-Z0-9-]*"]
+
+[token.string]
+regex = ['"(?:[^\\"]|\\.)*"', "'(?:[^\\\\']|\\.)*'"]
+
+[token.integer]
+regex = ["[+-]?(([1-9][0-9]*)|0)"]
+
+[token.number]
+regex = ["[+-]?(([1-9][0-9]*)|0)\\.[0-9]+"]
+
+[token.kw-true]
+literal = "true"
+
+[token.kw-false]
+literal = "false"
