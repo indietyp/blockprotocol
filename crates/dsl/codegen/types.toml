@@ -25,6 +25,9 @@ token = "-"
 [kind.star]
 token = "*"
 
+[kind.tilde]
+token = "~"
+
 [kind.slash]
 token = "/"
 

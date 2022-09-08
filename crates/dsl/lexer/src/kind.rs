@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 067039914CF80EADCCC646D195DC52ED4515DECE4D891E78A37C0178D3A4ACF1
+//! GENERATED WITH 17E144E83C1B3F5FEB534FFA86E9FF752AC60565B857CC37FFDD842722CA13AD
 
 use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
@@ -23,6 +23,8 @@ pub enum Kind {
     Minus,
     #[token("*")]
     Star,
+    #[token("~")]
+    Tilde,
     #[token("/")]
     Slash,
     #[token("|")]
