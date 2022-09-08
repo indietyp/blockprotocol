@@ -1,14 +1,23 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use std::fmt::{Display, Formatter};
+
+use error_stack::ResultExt;
+
+mod lexer;
+mod hash;
+
+#[derive(Debug)]
+struct Error;
+
+impl Display for Error {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str("error occurred during code generation")
+    }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl std::error::Error for Error {}
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+fn main() -> error_stack::Result<(), Error> {
+    lexer::check().change_context(Error)?;
+
+    Ok(())
 }
