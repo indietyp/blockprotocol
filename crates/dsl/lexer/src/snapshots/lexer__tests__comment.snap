@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(\"// abcdef\")"
+---
+[Token { kind: Comment, text: "// abcdef", range: 0..9 }]

@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(r#\"'Single \\\\ \\' quoted \\n \\r \\x string'\"#)"
+---
+[Token { kind: String, text: "'Single \\\\ \\' quoted \\n \\r \\x string'", range: 0..37 }]

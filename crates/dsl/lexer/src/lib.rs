@@ -107,4 +107,36 @@ mod tests {
             debug(r#"'Single \\ \' quoted \n \r \x string'"#)
         );
     }
+
+    #[test]
+    fn integer() {
+        assert_snapshot!(debug("12"));
+        assert_snapshot!("+", debug("+12"));
+        assert_snapshot!("-", debug("-12"));
+    }
+
+    #[test]
+    fn number() {
+        assert_snapshot!(debug("12.0"));
+        assert_snapshot!("no_zero", debug("12."));
+        assert_snapshot!("no_leading", debug(".12"));
+    }
+
+    #[test]
+    fn whitespace() {
+        assert_snapshot!("tab", debug("	"));
+        assert_snapshot!("space", debug(" "));
+        assert_snapshot!(
+            "newline",
+            debug(
+                r"
+"
+            )
+        );
+    }
+
+    #[test]
+    fn comment() {
+        assert_snapshot!(debug("// abcdef"));
+    }
 }

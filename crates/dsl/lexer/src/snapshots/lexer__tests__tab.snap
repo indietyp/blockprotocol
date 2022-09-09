@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(\"\t\")"
+---
+[Token { kind: Whitespace, text: "\t", range: 0..1 }]

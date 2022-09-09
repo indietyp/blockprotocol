@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(\" \")"
+---
+[Token { kind: Whitespace, text: " ", range: 0..1 }]

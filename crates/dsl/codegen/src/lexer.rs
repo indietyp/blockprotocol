@@ -130,7 +130,7 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     }
 
     let imports = quote!(
-        #![allow(missing_doc, reason = "file is automatically generated")]
+        #![allow(missing_docs, reason = "file is automatically generated")]
 
         use logos::Logos;
         use num_derive::{FromPrimitive, ToPrimitive};
@@ -177,42 +177,52 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         }
 
         impl Kind {
+            #[must_use]
             pub const fn trivia(&self) -> &'static [Self] {
                 &[#(Self::#trivia),*]
             }
 
+            #[must_use]
             pub fn is_trivia(&self) -> bool {
                 self.trivia().contains(self)
             }
 
+            #[must_use]
             pub const fn literals(&self) -> &'static [Self] {
                 &[#(Self::#literals),*]
             }
 
+            #[must_use]
             pub fn is_literal(&self) -> bool {
                 self.literals().contains(self)
             }
 
+            #[must_use]
             pub const fn infix_ops(&self) -> &'static [Self] {
                 &[#(Self::#infix_ops),*]
             }
 
+            #[must_use]
             pub fn is_infix_op(&self) -> bool {
                 self.infix_ops().contains(self)
             }
 
+            #[must_use]
             pub const fn prefix_ops(&self) -> &'static [Self] {
                 &[#(Self::#prefix_ops),*]
             }
 
+            #[must_use]
             pub fn is_prefix_op(&self) -> bool {
                 self.prefix_ops().contains(self)
             }
 
+            #[must_use]
             pub const fn postfix_ops(&self) -> &'static [Self] {
                 &[#(Self::#postfix_ops),*]
             }
 
+            #[must_use]
             pub fn is_postfix_op(&self) -> bool {
                 self.postfix_ops().contains(self)
             }

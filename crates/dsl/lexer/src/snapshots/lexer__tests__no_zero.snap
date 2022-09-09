@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(\"12.\")"
+---
+[Token { kind: Integer, text: "12", range: 0..2 }, Token { kind: Dot, text: ".", range: 2..3 }]
