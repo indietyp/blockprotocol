@@ -1,2 +1,2 @@
 [workspace]
-members = ['lexer', 'codegen']
+members = ['lexer', 'codegen', 'syntax']

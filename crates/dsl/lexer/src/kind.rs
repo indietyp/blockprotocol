@@ -1,6 +1,7 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH A0E4F63E54E747987A9ACE56DE6E3A0209D4C8440387937C88E9D2670EEFB093
+//! GENERATED WITH CC7EB731B72484BD593A1459093E405D35546DD67A3DC1451818740512977496
 
+#![allow(missing_doc, reason = "file is automatically generated")]
 use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
 #[derive(Logos, Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
@@ -51,10 +52,10 @@ pub enum Kind {
     LBracket,
     #[token("]")]
     RBracket,
-    #[regex("[a-zA-Z][a-zA-Z0-9-]*")]
+    #[regex("[_a-zA-Z][a-zA-Z0-9_]*")]
     Ident,
     #[regex("\"(?:[^\\\\\"]|\\\\.)*\"")]
-    #[regex("'(?:[^\\\\']|\\.)*'")]
+    #[regex("'(?:[^\\']|\\.)*'")]
     String,
     #[regex("[+-]?(([1-9][0-9]*)|0)")]
     Integer,

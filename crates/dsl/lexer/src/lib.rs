@@ -70,3 +70,41 @@ impl<'a> Iterator for Lexer<'a> {
         Some(token)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    //! This module tests the regexes not the tokens themselves, as there is no possibility of user
+    //! error
+
+    use insta::assert_snapshot;
+
+    use crate::Lexer;
+
+    fn debug(input: &str) -> String {
+        let input: Vec<_> = Lexer::new(input).collect();
+
+        format!("{input:?}")
+    }
+
+    #[test]
+    fn ident() {
+        assert_snapshot!("ident", debug("abc"));
+        assert_snapshot!("_", debug("_"));
+        assert_snapshot!("ident_ident", debug("abc_abc"));
+        assert_snapshot!("ident_", debug("ident_"));
+    }
+
+    #[test]
+    fn string() {
+        assert_snapshot!("double_quoted", debug(r#""Double quoted string""#));
+        assert_snapshot!(
+            "escaped double_quoted",
+            debug(r#""Double \\ \" quoted \n \r \x string""#)
+        );
+        assert_snapshot!("single_quoted", debug(r#"'Single quoted string'"#));
+        assert_snapshot!(
+            "escaped single_quoted",
+            debug(r#"'Single \\ \' quoted \n \r \x string'"#)
+        );
+    }
+}

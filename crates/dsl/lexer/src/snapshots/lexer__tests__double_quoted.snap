@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(r#\"\"Double quoted string\"\"#)"
+---
+[Token { kind: String, text: "\"Double quoted string\"", range: 0..22 }]

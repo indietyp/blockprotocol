@@ -77,8 +77,14 @@ token = "["
 [kind.r-bracket]
 token = "]"
 
+# Non reference identifiers are the same as identfiers but allow `_` instead of `-`,
+# this is because otherwise we wouldn't be able to distinguish between substraction and
+# such. This would otherwise make whitespace significant, which we would like to avoid.
+#
+# An implementation should search for a token sequence of `ident` `-` `ident` `-` `ident`
+# with no trailing `-` for the `reference-ident`.
 [kind.ident]
-regex = ["[a-zA-Z][a-zA-Z0-9-]*"]
+regex = ["[_a-zA-Z][a-zA-Z0-9_]*"]
 
 [kind.string]
 regex = ['"(?:[^\\"]|\\.)*"', "'(?:[^\\\\']|\\.)*'"]
@@ -146,6 +152,9 @@ is = ['trivia']
 [syntax.map-type]
 [syntax.tuple-type]
 
+# This identifier is only used for references, other variables use the `_`,
+# otherwise arithmatic would be impossible.
+[syntax.reference-ident]
 [syntax.reference]
 [syntax.variable]
 

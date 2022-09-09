@@ -1,0 +1,5 @@
+---
+source: lexer/src/lib.rs
+expression: "debug(\"ident_\")"
+---
+[Token { kind: Ident, text: "ident_", range: 0..6 }]

@@ -130,6 +130,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     }
 
     let imports = quote!(
+        #![allow(missing_doc, reason = "file is automatically generated")]
+
         use logos::Logos;
         use num_derive::{FromPrimitive, ToPrimitive};
     );
