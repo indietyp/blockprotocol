@@ -1,3 +1,13 @@
+#![warn(
+    missing_docs,
+    unreachable_pub,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::undocumented_unsafe_blocks
+)]
+#![allow(clippy::redundant_pub_crate)] // This would otherwise clash with `unreachable_pub`
+#![allow(clippy::module_name_repetitions)]
+
 use std::fmt::{Display, Formatter};
 
 use error_stack::ResultExt;

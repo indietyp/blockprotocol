@@ -11,7 +11,7 @@ use quote::{__private::TokenStream, quote};
 
 use crate::{
     config,
-    config::Config,
+    config::{Config, Is},
     hash::{hash_file, to_hex},
     util::camel_case_to_pascal_case,
 };
@@ -30,14 +30,12 @@ pub(crate) enum WriteError {
 impl Display for WriteError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            WriteError::Io => {
+            Self::Io => {
                 f.write_str("while trying to write to `lexer/src/kind.rs` an io error occurred")
             }
-            WriteError::Hash => f.write_str("unable to hash contents"),
-            WriteError::Check => {
-                f.write_str("searching for the `lexer/src/kind.rs` was not possible")
-            }
-            WriteError::Fmt => f.write_str("error while running `rustfmt` over the generated code"),
+            Self::Hash => f.write_str("unable to hash contents"),
+            Self::Check => f.write_str("searching for the `lexer/src/kind.rs` was not possible"),
+            Self::Fmt => f.write_str("error while running `rustfmt` over the generated code"),
         }
     }
 }
@@ -54,7 +52,7 @@ fn path() -> Result<PathBuf, CheckError> {
     Ok(path.join("lexer/src/kind.rs"))
 }
 
-fn write(stream: TokenStream) -> Result<(), WriteError> {
+fn write(stream: &TokenStream) -> Result<(), WriteError> {
     let path = path().change_context(WriteError::Check)?;
 
     let stream = stream.to_string();
@@ -102,15 +100,22 @@ pub(crate) enum GenerationError {
 impl Display for GenerationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            GenerationError::Check => {
+            Self::Check => {
                 f.write_str("while trying to check `lexer/src/kind.rs` an issue occurred")
             }
-            GenerationError::Write => f.write_str("writing of the file failed"),
+            Self::Write => f.write_str("writing of the file failed"),
         }
     }
 }
 
 impl std::error::Error for GenerationError {}
+
+fn find_is<'a>(config: &'a Config, is: &'a Is) -> impl Iterator<Item = &'a String> {
+    config
+        .kind
+        .iter()
+        .filter_map(|(key, value)| value.is.contains(is).then_some(key))
+}
 
 pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     let check = check().change_context(GenerationError::Check)?;
@@ -125,19 +130,19 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     );
 
     let entries = config.kind.iter().map(|(key, kind)| {
-        let token = if let Some(token) = &kind.token {
-            quote!(#[token(#token)])
-        } else {
-            quote!()
-        };
+        let token = kind
+            .token
+            .as_ref()
+            .map_or_else(|| quote!(), |token| quote!(#[token(#token)]));
 
-        let regex = if let Some(regex) = &kind.regex {
-            let regex = regex.iter().map(|regex| quote!(#[regex(#regex)]));
+        let regex = kind.regex.as_ref().map_or_else(
+            || quote!(),
+            |regex| {
+                let regex = regex.iter().map(|regex| quote!(#[regex(#regex)]));
 
-            quote!(#(#regex)*)
-        } else {
-            quote!()
-        };
+                quote!(#(#regex)*)
+            },
+        );
 
         let name = camel_case_to_pascal_case(key);
         let name = quote::format_ident!("{name}");
@@ -149,25 +154,74 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         )
     });
 
+    let trivia = find_is(config, &Is::Trivia);
+    let literals = find_is(config, &Is::Literal);
+    let infix_ops = find_is(config, &Is::InfixOp);
+    let prefix_ops = find_is(config, &Is::PrefixOp);
+    let suffix_ops = find_is(config, &Is::SuffixOp);
+
     let kinds = quote!(
         #[derive(Logos, Debug, PartialEq, ToPrimitive, Copy, Clone)]
         pub enum Kind {
-            #(#entries),*
+            #(#entries,)*
+
+            #[error]
+            Error
+        }
+
+        impl Kind {
+            pub const fn trivia(&self) -> &'static [Self] {
+                &[#(Self::#trivia),*]
+            }
+
+            pub const fn is_trivia(&self) -> bool {
+                self.trivia().contains(self)
+            }
+
+            pub const fn literals(&self) -> &'static [Self] {
+                &[#(Self::#literals),*]
+            }
+
+            pub const fn is_literals(&self) -> bool {
+                self.literal().contains(self)
+            }
+
+            pub const fn infix_ops(&self) -> &'static [Self] {
+                &[#(Self::#infix_ops),*]
+            }
+
+            pub const fn is_infix_op(&self) -> bool {
+                self.infix_ops().contains(self)
+            }
+
+            pub const fn prefix_ops(&self) -> &'static [Self] {
+                &[#(Self::#prefix_ops),*]
+            }
+
+            pub const fn is_prefix_op(&self) -> bool {
+                self.prefix_ops().contains(self)
+            }
+
+            pub const fn suffix_ops(&self) -> &'static [Self] {
+                &[#(Self::#suffix_ops),*]
+            }
+
+            pub const fn is_suffix_op(&self) -> bool {
+                self.suffix_ops().contains(self)
+            }
         }
     );
-
-    // TODO: impl like is_trivia and display
 
     let stream = quote! {
         #imports
         #kinds
     };
 
-    write(stream).change_context(GenerationError::Write)
+    write(&stream).change_context(GenerationError::Write)
 }
 
 #[derive(Debug)]
-pub enum CheckError {
+pub(crate) enum CheckError {
     NotCargo,
     Path,
     Io,

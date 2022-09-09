@@ -68,4 +68,47 @@ pub enum Kind {
     Whitespace,
     #[regex("//.*")]
     Comment,
+    #[error]
+    Error,
+}
+impl Kind {
+    pub fn trivia(&self) -> &'static [Self] {
+        &[]
+    }
+
+    pub fn is_trivia(&self) -> bool {
+        self.trivia().contains(self)
+    }
+
+    pub fn literals(&self) -> &'static [Self] {
+        &[]
+    }
+
+    pub fn is_literals(&self) -> bool {
+        self.literal().contains(self)
+    }
+
+    pub fn infix_ops(&self) -> &'static [Self] {
+        &[]
+    }
+
+    pub fn is_infix_op(&self) -> bool {
+        self.infix_ops().contains(self)
+    }
+
+    pub fn prefix_ops(&self) -> &'static [Self] {
+        &[]
+    }
+
+    pub fn is_prefix_op(&self) -> bool {
+        self.prefix_ops().contains(self)
+    }
+
+    pub fn suffix_ops(&self) -> &'static [Self] {
+        &[]
+    }
+
+    pub fn is_suffix_op(&self) -> bool {
+        self.suffix_ops().contains(self)
+    }
 }

@@ -28,10 +28,13 @@ impl Display for ConfigError {
 impl std::error::Error for ConfigError {}
 
 #[derive(serde::Serialize, serde::Deserialize, Copy, Clone, Eq, PartialEq, Hash)]
+#[serde(rename_all = "kebab-case")]
 pub(crate) enum Is {
+    Literal,
     Trivia,
-    BinaryOp,
-    UnaryOp,
+    InfixOp,
+    PrefixOp,
+    SuffixOp,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
