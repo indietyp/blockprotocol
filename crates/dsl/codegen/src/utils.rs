@@ -90,3 +90,26 @@ pub(crate) fn write(path: &Path, stream: &TokenStream) -> error_stack::Result<()
 
     Ok(())
 }
+
+#[derive(Debug)]
+pub(crate) enum CheckError {
+    NotCargo,
+    Path,
+    Io,
+    Hash,
+}
+
+impl Display for CheckError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NotCargo => f.write_str("codegen can only be executed using `cargo run`"),
+            Self::Path => {
+                f.write_str("`codegen` was unable to determine the path to the `lexer` package")
+            }
+            Self::Io => f.write_str("could not access file"),
+            Self::Hash => f.write_str("could not hash file contents of `types.toml`"),
+        }
+    }
+}
+
+impl std::error::Error for CheckError {}

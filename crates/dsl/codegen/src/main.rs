@@ -49,6 +49,7 @@ fn main() -> error_stack::Result<(), Error> {
     let config = Config::load().change_context(Error)?;
 
     lexer::generate(&config).change_context(Error)?;
+    syntax::generate(&config).change_context(Error)?;
 
     Ok(())
 }

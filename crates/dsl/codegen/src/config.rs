@@ -47,12 +47,12 @@ pub(crate) struct Kind {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-struct Syntax {}
+pub(crate) struct Syntax {}
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub(crate) struct Config {
     pub(crate) kind: IndexMap<String, Kind>,
-    syntax: IndexMap<String, Syntax>,
+    pub(crate) syntax: IndexMap<String, Syntax>,
 }
 
 impl Config {

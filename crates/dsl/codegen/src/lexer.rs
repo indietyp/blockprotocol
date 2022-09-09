@@ -11,9 +11,9 @@ use quote::{__private::Ident, quote};
 use crate::{
     config,
     config::{Config, Is},
-    hash::{hash_file, to_hex},
+    hash::{hash_file, hash_verify, to_hex},
     utils,
-    utils::camel_case_to_pascal_case,
+    utils::{camel_case_to_pascal_case, CheckError},
     DISCLAIMER, PREFIX,
 };
 
@@ -100,7 +100,7 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     let prefix_ops = find_is(config, &Is::PrefixOp);
     let postfix_ops = find_is(config, &Is::PostfixOp);
 
-    let kinds = quote!(
+    let type_ = quote!(
         #[derive(Logos, Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
         pub enum Kind {
             #(#entries,)*
@@ -165,67 +165,19 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     let stream = quote! {
         #imports
 
-        #kinds
+        #type_
     };
 
     utils::write(&path().change_context(GenerationError::Check)?, &stream)
         .change_context(GenerationError::Write)
 }
 
-#[derive(Debug)]
-pub(crate) enum CheckError {
-    NotCargo,
-    Path,
-    Io,
-    Hash,
-}
-
-impl Display for CheckError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::NotCargo => f.write_str("codegen can only be executed using `cargo run`"),
-            Self::Path => {
-                f.write_str("`codegen` was unable to determine the path to the `lexer` package")
-            }
-            Self::Io => f.write_str("could not access `kind.rs` file"),
-            Self::Hash => f.write_str("could not hash file contents of `types.toml`"),
-        }
-    }
-}
-
-impl std::error::Error for CheckError {}
-
 pub(crate) fn check() -> Result<bool, CheckError> {
     let path = path()?;
 
-    if path.exists() {
-        let contents = std::fs::read_to_string(path.as_path())
-            .into_report()
-            .change_context(CheckError::Io)?;
-        let mut lines = contents.lines();
-
-        let disclaimer = lines.next();
-        let hash = lines.next();
-
-        if disclaimer.is_none() || disclaimer != Some(DISCLAIMER) {
-            return Ok(false);
-        }
-
-        match hash {
-            None => Ok(false),
-            Some(hash) if !hash.starts_with(PREFIX) => Ok(false),
-            Some(hash) => {
-                // SAFETY: previous arm guarantees that there's a prefix
-                let actual = hash.strip_prefix(PREFIX).unwrap();
-                let expected =
-                    hash_file(&config::path().ok_or(CheckError::NotCargo).into_report()?)
-                        .change_context(CheckError::Hash)?;
-                let expected = to_hex(expected.as_ref());
-
-                Ok(actual == expected)
-            }
-        }
-    } else {
-        Ok(false)
+    if !path.exists() {
+        return Ok(false);
     }
+
+    hash_verify(&path)
 }

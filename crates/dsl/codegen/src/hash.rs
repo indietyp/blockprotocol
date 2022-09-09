@@ -8,6 +8,8 @@ use std::{
 use error_stack::{IntoReport, Result, ResultExt};
 use ring::digest::{Context, Digest, SHA256};
 
+use crate::{config, utils::CheckError, DISCLAIMER, PREFIX};
+
 #[derive(Debug)]
 pub(crate) struct HashError;
 
@@ -46,7 +48,7 @@ pub(crate) fn hash_file(path: &Path) -> Result<Digest, HashError> {
     hash_reader(reader)
 }
 
-fn hex_from_digit(num: u8) -> char {
+const fn hex_from_digit(num: u8) -> char {
     if num < 10 {
         (b'0' + num) as char
     } else {
@@ -67,4 +69,33 @@ pub(crate) fn to_hex(blob: &[u8]) -> String {
     }
 
     buffer
+}
+
+pub(crate) fn hash_verify(source: &Path) -> Result<bool, CheckError> {
+    let contents = std::fs::read_to_string(source)
+        .into_report()
+        .change_context(CheckError::Io)?;
+
+    let mut lines = contents.lines();
+
+    let disclaimer = lines.next();
+    let hash = lines.next();
+
+    if disclaimer.is_none() || disclaimer != Some(DISCLAIMER) {
+        return Ok(false);
+    }
+
+    match hash {
+        None => Ok(false),
+        Some(hash) if !hash.starts_with(PREFIX) => Ok(false),
+        Some(hash) => {
+            // SAFETY: previous arm guarantees that there's a prefix
+            let actual = hash.strip_prefix(PREFIX).unwrap();
+            let expected = hash_file(&config::path().ok_or(CheckError::NotCargo).into_report()?)
+                .change_context(CheckError::Hash)?;
+            let expected = to_hex(expected.as_ref());
+
+            Ok(actual == expected)
+        }
+    }
 }
