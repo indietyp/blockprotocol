@@ -1,11 +1,11 @@
 use std::{
-    collections::{HashMap, HashSet},
-    fmt::{Display, Formatter, Write},
+    collections::HashSet,
+    fmt::{Display, Formatter},
     fs::read_to_string,
     path::{Path, PathBuf},
 };
 
-use error_stack::{IntoReport, IteratorExt, Result, ResultExt};
+use error_stack::{IntoReport, Result, ResultExt};
 use indexmap::IndexMap;
 
 #[derive(Debug)]
@@ -18,9 +18,9 @@ pub(crate) enum ConfigError {
 impl Display for ConfigError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            ConfigError::NotCargo => f.write_str("`codegen` can only be executed with `cargo run`"),
-            ConfigError::Io => f.write_str("during reading an io error occurred"),
-            ConfigError::Toml => f.write_str("`types.toml` contains invalid toml"),
+            Self::NotCargo => f.write_str("`codegen` can only be executed with `cargo run`"),
+            Self::Io => f.write_str("during reading an io error occurred"),
+            Self::Toml => f.write_str("`types.toml` contains invalid toml"),
         }
     }
 }

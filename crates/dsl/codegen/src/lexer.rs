@@ -1,49 +1,21 @@
 use std::{
     fmt::{Display, Formatter},
-    fs::File,
     io::Write,
     path::{Path, PathBuf},
     process::Command,
 };
 
 use error_stack::{IntoReport, Report, Result, ResultExt};
-use quote::{
-    __private::{Ident, TokenStream},
-    quote,
-};
+use quote::{__private::Ident, quote};
 
 use crate::{
     config,
     config::{Config, Is},
     hash::{hash_file, to_hex},
-    util::camel_case_to_pascal_case,
+    utils,
+    utils::camel_case_to_pascal_case,
+    DISCLAIMER, PREFIX,
 };
-
-const DISCLAIMER: &str = "//! THIS FILE HAS BEEN AUTOMATICALLY GENERATED";
-const PREFIX: &str = "//! GENERATED WITH ";
-
-#[derive(Debug)]
-pub(crate) enum WriteError {
-    Io,
-    Hash,
-    Check,
-    Fmt,
-}
-
-impl Display for WriteError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Io => {
-                f.write_str("while trying to write to `lexer/src/kind.rs` an io error occurred")
-            }
-            Self::Hash => f.write_str("unable to hash contents"),
-            Self::Check => f.write_str("searching for the `lexer/src/kind.rs` was not possible"),
-            Self::Fmt => f.write_str("error while running `rustfmt` over the generated code"),
-        }
-    }
-}
-
-impl std::error::Error for WriteError {}
 
 fn path() -> Result<PathBuf, CheckError> {
     let env = option_env!("CARGO_MANIFEST_DIR").ok_or_else(|| Report::new(CheckError::NotCargo))?;
@@ -53,45 +25,6 @@ fn path() -> Result<PathBuf, CheckError> {
         .ok_or_else(|| Report::new(CheckError::Path))?;
 
     Ok(path.join("lexer/src/kind.rs"))
-}
-
-fn write(stream: &TokenStream) -> Result<(), WriteError> {
-    let path = path().change_context(WriteError::Check)?;
-
-    let stream = stream.to_string();
-
-    let mut file = File::create(&path)
-        .into_report()
-        .change_context(WriteError::Io)?;
-
-    let hash = config::path()
-        .ok_or(CheckError::NotCargo)
-        .into_report()
-        .change_context(WriteError::Check)?;
-
-    let digest = hash_file(&hash).change_context(WriteError::Hash)?;
-    let hash = to_hex(digest.as_ref());
-
-    let contents = format!("{DISCLAIMER}\n{PREFIX}{hash}\n\n{stream}");
-
-    file.write_all(contents.as_bytes())
-        .into_report()
-        .change_context(WriteError::Io)?;
-
-    file.flush().into_report().change_context(WriteError::Io)?;
-    // make sure we dropped the file before we format
-    drop(file);
-
-    let out = Command::new("sh")
-        .arg("-c")
-        .arg(format!("cargo fmt -- {}", path.to_str().unwrap()))
-        .output()
-        .into_report()
-        .change_context(WriteError::Fmt)?;
-
-    println!("{out:?}");
-
-    Ok(())
 }
 
 #[derive(Debug)]
@@ -235,7 +168,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         #kinds
     };
 
-    write(&stream).change_context(GenerationError::Write)
+    utils::write(&path().change_context(GenerationError::Check)?, &stream)
+        .change_context(GenerationError::Write)
 }
 
 #[derive(Debug)]

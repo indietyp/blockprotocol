@@ -24,10 +24,14 @@ use error_stack::ResultExt;
 
 use crate::config::Config;
 
+pub(crate) const DISCLAIMER: &str = "//! THIS FILE HAS BEEN AUTOMATICALLY GENERATED";
+pub(crate) const PREFIX: &str = "//! GENERATED WITH ";
+
 pub(crate) mod config;
 mod hash;
 mod lexer;
-mod util;
+mod syntax;
+mod utils;
 
 #[derive(Debug)]
 struct Error;
