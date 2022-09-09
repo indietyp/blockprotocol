@@ -7,7 +7,10 @@ use std::{
 };
 
 use error_stack::{IntoReport, Report, Result, ResultExt};
-use quote::{__private::TokenStream, quote};
+use quote::{
+    __private::{Ident, TokenStream},
+    quote,
+};
 
 use crate::{
     config,
@@ -110,11 +113,13 @@ impl Display for GenerationError {
 
 impl std::error::Error for GenerationError {}
 
-fn find_is<'a>(config: &'a Config, is: &'a Is) -> impl Iterator<Item = &'a String> {
-    config
-        .kind
-        .iter()
-        .filter_map(|(key, value)| value.is.contains(is).then_some(key))
+fn find_is<'a>(config: &'a Config, is: &'a Is) -> impl Iterator<Item = Ident> + 'a {
+    config.kind.iter().filter_map(|(key, value)| {
+        value
+            .is
+            .contains(is)
+            .then(|| quote::format_ident!("{}", camel_case_to_pascal_case(key)))
+    })
 }
 
 pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
@@ -158,10 +163,10 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     let literals = find_is(config, &Is::Literal);
     let infix_ops = find_is(config, &Is::InfixOp);
     let prefix_ops = find_is(config, &Is::PrefixOp);
-    let suffix_ops = find_is(config, &Is::SuffixOp);
+    let postfix_ops = find_is(config, &Is::PostfixOp);
 
     let kinds = quote!(
-        #[derive(Logos, Debug, PartialEq, ToPrimitive, Copy, Clone)]
+        #[derive(Logos, Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
         pub enum Kind {
             #(#entries,)*
 
@@ -174,7 +179,7 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
                 &[#(Self::#trivia),*]
             }
 
-            pub const fn is_trivia(&self) -> bool {
+            pub fn is_trivia(&self) -> bool {
                 self.trivia().contains(self)
             }
 
@@ -182,15 +187,15 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
                 &[#(Self::#literals),*]
             }
 
-            pub const fn is_literals(&self) -> bool {
-                self.literal().contains(self)
+            pub fn is_literal(&self) -> bool {
+                self.literals().contains(self)
             }
 
             pub const fn infix_ops(&self) -> &'static [Self] {
                 &[#(Self::#infix_ops),*]
             }
 
-            pub const fn is_infix_op(&self) -> bool {
+            pub fn is_infix_op(&self) -> bool {
                 self.infix_ops().contains(self)
             }
 
@@ -198,22 +203,23 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
                 &[#(Self::#prefix_ops),*]
             }
 
-            pub const fn is_prefix_op(&self) -> bool {
+            pub fn is_prefix_op(&self) -> bool {
                 self.prefix_ops().contains(self)
             }
 
-            pub const fn suffix_ops(&self) -> &'static [Self] {
-                &[#(Self::#suffix_ops),*]
+            pub const fn postfix_ops(&self) -> &'static [Self] {
+                &[#(Self::#postfix_ops),*]
             }
 
-            pub const fn is_suffix_op(&self) -> bool {
-                self.suffix_ops().contains(self)
+            pub fn is_postfix_op(&self) -> bool {
+                self.postfix_ops().contains(self)
             }
         }
     );
 
     let stream = quote! {
         #imports
+
         #kinds
     };
 

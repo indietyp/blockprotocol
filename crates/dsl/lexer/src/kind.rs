@@ -1,9 +1,9 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 17E144E83C1B3F5FEB534FFA86E9FF752AC60565B857CC37FFDD842722CA13AD
+//! GENERATED WITH A0E4F63E54E747987A9ACE56DE6E3A0209D4C8440387937C88E9D2670EEFB093
 
 use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
-#[derive(Logos, Debug, PartialEq, ToPrimitive, Copy, Clone)]
+#[derive(Logos, Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
 pub enum Kind {
     #[token(":")]
     Colon,
@@ -72,43 +72,59 @@ pub enum Kind {
     Error,
 }
 impl Kind {
-    pub fn trivia(&self) -> &'static [Self] {
-        &[]
+    pub const fn trivia(&self) -> &'static [Self] {
+        &[Self::Whitespace, Self::Comment]
     }
 
     pub fn is_trivia(&self) -> bool {
         self.trivia().contains(self)
     }
 
-    pub fn literals(&self) -> &'static [Self] {
-        &[]
+    pub const fn literals(&self) -> &'static [Self] {
+        &[
+            Self::String,
+            Self::Integer,
+            Self::Number,
+            Self::KwTrue,
+            Self::KwFalse,
+        ]
     }
 
-    pub fn is_literals(&self) -> bool {
-        self.literal().contains(self)
+    pub fn is_literal(&self) -> bool {
+        self.literals().contains(self)
     }
 
-    pub fn infix_ops(&self) -> &'static [Self] {
-        &[]
+    pub const fn infix_ops(&self) -> &'static [Self] {
+        &[
+            Self::Colon,
+            Self::Dot,
+            Self::Equals,
+            Self::GreaterThan,
+            Self::LessThan,
+            Self::Plus,
+            Self::Minus,
+            Self::Slash,
+            Self::Pipe,
+        ]
     }
 
     pub fn is_infix_op(&self) -> bool {
         self.infix_ops().contains(self)
     }
 
-    pub fn prefix_ops(&self) -> &'static [Self] {
-        &[]
+    pub const fn prefix_ops(&self) -> &'static [Self] {
+        &[Self::Plus, Self::Minus]
     }
 
     pub fn is_prefix_op(&self) -> bool {
         self.prefix_ops().contains(self)
     }
 
-    pub fn suffix_ops(&self) -> &'static [Self] {
-        &[]
+    pub const fn postfix_ops(&self) -> &'static [Self] {
+        &[Self::QuestionMark]
     }
 
-    pub fn is_suffix_op(&self) -> bool {
-        self.suffix_ops().contains(self)
+    pub fn is_postfix_op(&self) -> bool {
+        self.postfix_ops().contains(self)
     }
 }

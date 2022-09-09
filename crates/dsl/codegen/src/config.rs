@@ -34,7 +34,7 @@ pub(crate) enum Is {
     Trivia,
     InfixOp,
     PrefixOp,
-    SuffixOp,
+    PostfixOp,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]

@@ -1,26 +1,34 @@
 [kind.colon]
 token = ":"
+is = ['infix-op']
 
 [kind.dot]
 token = "."
+is = ['infix-op']
 
 [kind.question-mark]
 token = "?"
+is = ['postfix-op']
 
 [kind.equals]
 token = "="
+is = ['infix-op']
 
 [kind.greater-than]
 token = ">"
+is = ['infix-op']
 
 [kind.less-than]
 token = "<"
+is = ['infix-op']
 
 [kind.plus]
 token = "+"
+is = ['infix-op', 'prefix-op']
 
 [kind.minus]
 token = "-"
+is = ['infix-op', 'prefix-op']
 
 [kind.star]
 token = "*"
@@ -30,9 +38,11 @@ token = "~"
 
 [kind.slash]
 token = "/"
+is = ['infix-op']
 
 [kind.pipe]
 token = "|"
+is = ['infix-op']
 
 [kind.at]
 token = "@"
@@ -72,25 +82,32 @@ regex = ["[a-zA-Z][a-zA-Z0-9-]*"]
 
 [kind.string]
 regex = ['"(?:[^\\"]|\\.)*"', "'(?:[^\\\\']|\\.)*'"]
+is = ['literal']
 
 [kind.integer]
 regex = ["[+-]?(([1-9][0-9]*)|0)"]
+is = ['literal']
 
 [kind.number]
 regex = ["[+-]?(([1-9][0-9]*)|0)\\.[0-9]+"]
-priority = 12
+priority = 16
+is = ['literal']
 
 [kind.kw-true]
 token = "true"
+is = ['literal']
 
 [kind.kw-false]
 token = "false"
+is = ['literal']
 
 [kind.whitespace]
 regex = ["\\s"]
+is = ['trivia']
 
 [kind.comment]
 regex = ["//.*"]
+is = ['trivia']
 
 [syntax.data-stmt]
 [syntax.prop-stmt]

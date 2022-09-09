@@ -1,3 +1,13 @@
+//! This crate isn't directly consumed, but instead used internally, to generate all related files
+//! from a single source of truth: the `types.toml` file.
+//!
+//! Why use a codegen approach and not a proc-macro?
+//! The types.toml is only going to be changed a few times through it's history and the overhead of
+//! a proc-macro for such an isolated case is too high.
+//!
+//! The `types.toml` file enables us to generate all code needed once and check for updates via the
+//! prefix of a file.
+
 #![warn(
     missing_docs,
     unreachable_pub,
