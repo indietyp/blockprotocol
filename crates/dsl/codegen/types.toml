@@ -61,21 +61,27 @@ token = ","
 
 [kind.l-brace]
 token = "{"
+shortcut = "'}'"
 
 [kind.r-brace]
 token = "}"
+shortcut = "'{'"
 
 [kind.l-paren]
 token = "("
+shortcut = "'('"
 
 [kind.r-paren]
 token = ")"
+shortcut = "')'"
 
 [kind.l-bracket]
 token = "["
+shortcut = "'['"
 
 [kind.r-bracket]
 token = "]"
+shortcut = "']'"
 
 # Non reference identifiers are the same as identfiers but allow `_` instead of `-`,
 # this is because otherwise we wouldn't be able to distinguish between substraction and
@@ -173,3 +179,11 @@ is = ['trivia']
 # TODO: function expression and such
 [syntax.call-expr]
 [syntax.call-args]
+
+# These are compound syntax kinds, which are supposed to be joined together
+[syntax.colon2]
+shortcut = "::"
+[syntax.dot2]
+shortcut = ".."
+[syntax.dot2-eq]
+shortcut = "..="

@@ -44,10 +44,14 @@ pub(crate) struct Kind {
 
     #[serde(default)]
     pub(crate) is: HashSet<Is>,
+
+    pub(crate) shortcut: Option<String>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-pub(crate) struct Syntax {}
+pub(crate) struct Syntax {
+    pub(crate) shortcut: Option<String>,
+}
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub(crate) struct Config {

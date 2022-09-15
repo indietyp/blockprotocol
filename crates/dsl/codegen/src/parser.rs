@@ -4,7 +4,8 @@ use std::{
 };
 
 use error_stack::{Report, Result, ResultExt};
-use quote::quote;
+use quote::{__private::TokenTree, format_ident, quote};
+use syn::__private::TokenStream;
 
 use crate::{
     hash::hash_verify,
@@ -72,6 +73,26 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         quote!(Kind::#kind => Self::#other)
     });
 
+    let shortcuts = config
+        .kind
+        .iter()
+        .map(|(key, value)| (key, value.shortcut.as_ref().or(value.token.as_ref())))
+        .chain(
+            config
+                .syntax
+                .iter()
+                .map(|(key, value)| (key, value.shortcut.as_ref())),
+        )
+        .filter_map(|(key, token)| {
+            token.map(|token| {
+                let key = format_ident!("{}", camel_case_to_pascal_case(key));
+
+                let tree = syn::parse_str::<syn::__private::TokenStream2>(token).unwrap();
+
+                quote!([#tree] => {$crate :: SyntaxKind :: #key})
+            })
+        });
+
     let type_ = quote! {
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
         pub enum SyntaxKind {
@@ -88,6 +109,10 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
                     Kind::Error => Self::Error
                 }
             }
+        }
+
+        macro_rules! T {
+            #(#shortcuts;)*
         }
     };
 

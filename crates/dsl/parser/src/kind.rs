@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 4BA903CA665F2FDA113C6E0B7ED398981CC4962A7DDF1CC0588995970F10CA90
+//! GENERATED WITH 9B29923AA873EB31CEBB3A67901D0E885FB8380731F99ABBF0F22E9B0CA44430
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -75,6 +75,9 @@ pub enum SyntaxKind {
     Attribute,
     CallExpr,
     CallArgs,
+    Colon2,
+    Dot2,
+    Dot2Eq,
     Error,
     Tombstone,
 }
@@ -117,3 +120,4 @@ impl From<Kind> for SyntaxKind {
         }
     }
 }
+macro_rules ! T { [:] => { $ crate :: SyntaxKind :: Colon } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [?] => { $ crate :: SyntaxKind :: QuestionMark } ; [=] => { $ crate :: SyntaxKind :: Equals } ; [>] => { $ crate :: SyntaxKind :: GreaterThan } ; [<] => { $ crate :: SyntaxKind :: LessThan } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [*] => { $ crate :: SyntaxKind :: Star } ; [~] => { $ crate :: SyntaxKind :: Tilde } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [|] => { $ crate :: SyntaxKind :: Pipe } ; [@] => { $ crate :: SyntaxKind :: At } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [&] => { $ crate :: SyntaxKind :: Ampersand } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [,] => { $ crate :: SyntaxKind :: Comma } ; ['}'] => { $ crate :: SyntaxKind :: LBrace } ; ['{'] => { $ crate :: SyntaxKind :: RBrace } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [true] => { $ crate :: SyntaxKind :: KwTrue } ; [false] => { $ crate :: SyntaxKind :: KwFalse } ; [null] => { $ crate :: SyntaxKind :: KwNull } ; [::] => { $ crate :: SyntaxKind :: Colon2 } ; [..] => { $ crate :: SyntaxKind :: Dot2 } ; [..=] => { $ crate :: SyntaxKind :: Dot2Eq } ; }

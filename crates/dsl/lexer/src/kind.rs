@@ -1,10 +1,12 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 4BA903CA665F2FDA113C6E0B7ED398981CC4962A7DDF1CC0588995970F10CA90
+//! GENERATED WITH 9B29923AA873EB31CEBB3A67901D0E885FB8380731F99ABBF0F22E9B0CA44430
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
-#[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone)]
+#[derive(
+    Logos, Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash,
+)]
 pub enum Kind {
     #[token(":")]
     Colon,

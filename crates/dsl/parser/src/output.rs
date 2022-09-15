@@ -3,6 +3,7 @@
 //! https://github.com/rust-lang/rust-analyzer/blob/6b163c301f70d0e1246fb898b5f5edcc4d03fa4c/crates/parser/src/output.rs
 
 use error_stack::Report;
+use num_traits::FromPrimitive;
 
 use crate::{error::ParserError, kind::SyntaxKind};
 
@@ -47,7 +48,7 @@ impl Output {
             let tag = ((event & 0x0000_00F0) >> 4) as u8;
             match tag {
                 0 => {
-                    let kind: SyntaxKind = (((event & 0xFFFF_0000) >> 16) as u16).into();
+                    let kind = SyntaxKind::from_u16(((event & 0xFFFF_0000) >> 16) as u16).unwrap();
                     let n_input_tokens = ((event & 0x0000_FF00) >> 8) as u8;
                     Step::Token {
                         kind,
@@ -55,7 +56,7 @@ impl Output {
                     }
                 }
                 1 => {
-                    let kind: SyntaxKind = (((event & 0xFFFF_0000) >> 16) as u16).into();
+                    let kind = SyntaxKind::from_u16(((event & 0xFFFF_0000) >> 16) as u16).unwrap();
                     Step::Enter { kind }
                 }
                 2 => Step::Exit,
