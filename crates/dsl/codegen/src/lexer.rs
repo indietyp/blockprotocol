@@ -101,7 +101,7 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     let postfix_ops = find_is(config, &Is::PostfixOp);
 
     let type_ = quote!(
-        #[derive(Logos, Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
+        #[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
         pub enum Kind {
             #(#entries,)*
 

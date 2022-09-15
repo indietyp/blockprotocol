@@ -1,10 +1,10 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 26454E607F8936A18A9BE13C5FF106D9130E5664F63CA5A6CD221DBA50B1A6ED
+//! GENERATED WITH 4BA903CA665F2FDA113C6E0B7ED398981CC4962A7DDF1CC0588995970F10CA90
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
-#[derive(Logos, Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
+#[derive(Logos, Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone)]
 pub enum Kind {
     #[token(":")]
     Colon,
@@ -65,6 +65,8 @@ pub enum Kind {
     KwTrue,
     #[token("false")]
     KwFalse,
+    #[token("null")]
+    KwNull,
     #[regex("\\s")]
     Whitespace,
     #[regex("//.*")]
@@ -91,6 +93,7 @@ impl Kind {
             Self::Number,
             Self::KwTrue,
             Self::KwFalse,
+            Self::KwNull,
         ]
     }
 

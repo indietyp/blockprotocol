@@ -112,6 +112,10 @@ is = ['literal']
 token = "false"
 is = ['literal']
 
+[kind.kw-null]
+token = "null"
+is = ['literal']
+
 [kind.whitespace]
 regex = ["\\s"]
 is = ['trivia']

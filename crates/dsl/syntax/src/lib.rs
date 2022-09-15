@@ -12,4 +12,6 @@
 #![allow(clippy::redundant_pub_crate)] // This would otherwise clash with `unreachable_pub`
 #![allow(clippy::module_name_repetitions)]
 
+mod error;
 mod kind;
+mod tree;

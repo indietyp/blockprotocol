@@ -73,8 +73,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     });
 
     let type_ = quote! {
-        #[derive(Debug, PartialEq, Eq, FromPrimitive, ToPrimitive, Copy, Clone)]
-        pub(crate) enum SyntaxKind {
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
+        pub enum SyntaxKind {
             #(#entries,)*
 
             Error,
