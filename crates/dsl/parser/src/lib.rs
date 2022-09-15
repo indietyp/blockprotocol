@@ -14,6 +14,8 @@
 //!
 //! [`Parser`]: crate::parser::Parser
 #![feature(lint_reasons)]
+#![feature(error_generic_member_access)]
+#![feature(provide_any)]
 #![warn(
     missing_docs,
     unreachable_pub,
@@ -24,9 +26,15 @@
 #![allow(clippy::redundant_pub_crate)] // This would otherwise clash with `unreachable_pub`
 #![allow(clippy::module_name_repetitions)]
 
+pub use kind::SyntaxKind;
+
 mod error;
 mod event;
 mod input;
+#[macro_use]
 pub mod kind;
 mod lexed_str;
+mod marker;
 mod output;
+mod parser;
+mod token_set;

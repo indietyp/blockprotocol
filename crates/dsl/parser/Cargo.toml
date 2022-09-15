@@ -7,6 +7,9 @@ edition = "2021"
 
 [dependencies]
 text-size = "1.1.0"
+limit = {git = "https://github.com/rust-lang/rust-analyzer"}
+drop_bomb = "0.1"
+either = "1.8.0"
 
 error-stack = { git = "https://github.com/hashintel/hash.git" }
 
