@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH D274CEAEFE4E4AF824E203F9D1000CD06C12938DBB8A0F823A629BD3A6932E9D
+//! GENERATED WITH 687DDC1A5D46A3349CA8DFDFC0F1F33244EB01BC34B28DB5449E337E1CB43553
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -47,6 +47,7 @@ pub enum SyntaxKind {
     LetItem,
     UseItem,
     SetItem,
+    ImportItem,
     AliasItem,
     AliasDataItem,
     AliasPropItem,
@@ -88,6 +89,7 @@ pub enum SyntaxKind {
     AliasKw,
     UseKw,
     SetKw,
+    ImportKw,
     EndOfFile,
     Error,
     Tombstone,
@@ -153,6 +155,7 @@ impl SyntaxKind {
             "alias" => Self::AliasKw,
             "use" => Self::UseKw,
             "set" => Self::SetKw,
+            "import" => Self::ImportKw,
             _ => return None,
         };
         Some(kw)

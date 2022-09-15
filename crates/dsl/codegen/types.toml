@@ -145,6 +145,7 @@ is = ['trivia']
 [syntax.let-item]
 [syntax.use-item]
 [syntax.set-item] # TODO: consider removing this (only used for configuration?!)
+[syntax.import-item]
 
 # TODO: this still uses `=`
 [syntax.alias-item]
@@ -211,3 +212,5 @@ contextual = "alias"
 contextual = "use"
 [syntax.set-kw]
 contextual = "set"
+[syntax.import-kw]
+contextual = "import"

@@ -13,14 +13,6 @@ pub(crate) mod entry {
     pub(crate) mod prefix {
         use super::*;
 
-        pub(crate) fn block(p: &mut Parser<'_>) {
-            expressions::block_expr(p);
-        }
-
-        pub(crate) fn stmt(p: &mut Parser<'_>) {
-            expressions::stmt(p, Semicolon::Forbidden);
-        }
-
         pub(crate) fn ty(p: &mut Parser<'_>) {
             types::type_(p);
         }

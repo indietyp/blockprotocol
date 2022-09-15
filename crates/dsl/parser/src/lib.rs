@@ -61,7 +61,7 @@ pub enum PrefixEntryPoint {
     // /// Statements are currently unused, but will be available in user defined functions
     // /// (if ever supported)
     // Stmt,
-    /// Type declaration is something like:
+    /// Type declarations like:
     /// ```text
     /// {
     ///     record,
@@ -69,17 +69,17 @@ pub enum PrefixEntryPoint {
     /// }
     /// ```
     Ty,
-    /// Expression is something like:
+    /// Expressions like:
     /// ```text
     /// "example"
     /// ```
     Expr,
-    /// This includes things like:
+    /// Paths like:
     /// ```text
     /// impl::config::abc
     /// ```
     Path,
-    /// This includes things like:
+    /// Items like:
     /// ```text
     /// prop "X": {}
     /// ```
