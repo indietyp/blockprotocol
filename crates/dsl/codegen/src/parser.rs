@@ -20,7 +20,7 @@ fn path() -> Result<PathBuf, CheckError> {
         .parent()
         .ok_or_else(|| Report::new(CheckError::Path))?;
 
-    Ok(path.join("syntax/src/kind.rs"))
+    Ok(path.join("parser/src/kind.rs"))
 }
 
 #[derive(Debug)]
@@ -33,7 +33,7 @@ impl Display for GenerationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Check => {
-                f.write_str("while trying to check `lexer/src/kind.rs` an issue occurred")
+                f.write_str("while trying to check `parser/src/kind.rs` an issue occurred")
             }
             Self::Write => f.write_str("writing of the file failed"),
         }

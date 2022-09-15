@@ -1,5 +1,4 @@
-//! This module takes the lexed output from the `lexer` crate and transforms it into a CST and AST
-//! (which is built upon the CST).
+//! This module takes the CST from the `parser` crate and transforms it into an AST
 
 #![feature(lint_reasons)]
 #![warn(
@@ -13,5 +12,5 @@
 #![allow(clippy::module_name_repetitions)]
 
 mod error;
-mod kind;
+mod parse;
 mod tree;

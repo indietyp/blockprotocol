@@ -30,7 +30,7 @@ pub(crate) const PREFIX: &str = "//! GENERATED WITH ";
 pub(crate) mod config;
 mod hash;
 mod lexer;
-mod syntax;
+mod parser;
 mod utils;
 
 #[derive(Debug)]
@@ -49,7 +49,7 @@ fn main() -> error_stack::Result<(), Error> {
     let config = Config::load().change_context(Error)?;
 
     lexer::generate(&config).change_context(Error)?;
-    syntax::generate(&config).change_context(Error)?;
+    parser::generate(&config).change_context(Error)?;
 
     Ok(())
 }

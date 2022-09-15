@@ -2,6 +2,9 @@
 //! a stream of tokens which have been lexed.
 //!
 //! Most of the source code (located in `kind.rs`) has been generated through the codegen crate.
+//!
+//! This crate is not included in the parser as the expansion of [`logos`] is quite large and we
+//! want to avoid recompilation.
 
 #![feature(lint_reasons)]
 #![warn(
