@@ -160,7 +160,7 @@ is = ['trivia']
 
 [syntax.record-expr]
 [syntax.record-expr-entry]
-[syntax.literal-expr]
+[syntax.literal]
 # this is special, because a string might be prefixed and suffixed by an identifier
 [syntax.string-expr]
 [syntax.map-expr]
@@ -186,6 +186,7 @@ is = ['trivia']
 # This identifier is only used for references, other variables use the `_`,
 # otherwise arithmatic would be impossible.
 [syntax.reference-ref]
+[syntax.name]
 [syntax.name-ref]
 
 [syntax.comment-doc]
@@ -205,6 +206,14 @@ shortcut = "::"
 shortcut = ".."
 [syntax.dot2-eq]
 shortcut = "..="
+[syntax.minus-greater-than]
+shortcut = "->"
+[syntax.tilde-greater-than]
+shortcut = "~>"
+[syntax.less-than-minus]
+shortcut = "<-"
+[syntax.less-than-tilde]
+shortcut = "<~"
 
 [syntax.data-kw]
 contextual = "data"

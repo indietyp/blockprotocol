@@ -40,7 +40,7 @@ fn attr(p: &mut Parser<'_>, inner: bool) {
 
 pub(super) fn meta(p: &mut Parser<'_>) {
     let meta = p.start();
-    paths::use_path(p);
+    paths::path(p);
 
     match p.current() {
         T![=] => {

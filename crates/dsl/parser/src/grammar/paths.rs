@@ -7,7 +7,7 @@ use crate::{
     SyntaxKind,
 };
 
-fn path(p: &mut Parser) {
+pub(crate) fn path(p: &mut Parser) {
     let m = p.start();
     path_segment(p, true);
 

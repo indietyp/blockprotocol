@@ -1,8 +1,14 @@
 mod attributes;
+mod expressions;
 mod items;
 mod paths;
 
-use crate::{error::ExpectedIdentifierError, parser::Parser, SyntaxKind};
+use crate::{
+    error::{Expected, ExpectedError},
+    parser::Parser,
+    token_set::TokenSet,
+    SyntaxKind,
+};
 
 #[derive(PartialEq, Eq)]
 pub(super) enum Semicolon {
@@ -61,12 +67,25 @@ pub(crate) fn reparser(
     None
 }
 
-fn name_ref(p: &mut Parser<'_>) {
+fn name(p: &mut Parser, recovery: TokenSet) {
+    if p.at(SyntaxKind::Ident) {
+        let m = p.start();
+        p.bump(SyntaxKind::Ident);
+        m.complete(p, SyntaxKind::Name);
+    } else {
+        p.err_recover(
+            ExpectedError::report(p.position(), Expected::Name),
+            recovery,
+        );
+    }
+}
+
+fn name_ref(p: &mut Parser) {
     if p.at(SyntaxKind::Ident) {
         let m = p.start();
         p.bump(SyntaxKind::Ident);
         m.complete(p, SyntaxKind::NameRef);
     } else {
-        p.err_and_bump(ExpectedIdentifierError::report(p.position()));
+        p.err_and_bump(ExpectedError::report(p.position(), Expected::Ident));
     }
 }

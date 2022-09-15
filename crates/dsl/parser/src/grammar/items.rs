@@ -1,4 +1,10 @@
-use crate::{error::UnmatchedError, parser::Parser, token_set::TokenSet, SyntaxKind};
+use crate::{
+    error::UnmatchedError,
+    grammar::{name, name_ref},
+    parser::Parser,
+    token_set::TokenSet,
+    SyntaxKind,
+};
 
 pub(super) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
     SyntaxKind::DataKw,
@@ -14,6 +20,20 @@ pub(super) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
 
 pub(super) fn item(p: &mut Parser) {
     todo!()
+}
+
+/// `prop` structurally can be described as:
+///
+/// ```text
+/// prop [id] "string": type (allowed ones) [= default] [;]
+/// ```
+fn prop(p: &mut Parser) {
+    assert!(p.at_contextual_kw(SyntaxKind::DataKw));
+    p.bump(SyntaxKind::Ident);
+
+    if p.at(SyntaxKind::Ident) {
+        name(p, ITEM_RECOVERY_SET);
+    }
 }
 
 pub(crate) fn token_tree(p: &mut Parser<'_>) {

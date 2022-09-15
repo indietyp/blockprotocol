@@ -45,15 +45,32 @@ impl Label {
 }
 
 #[derive(Debug)]
+pub enum Expected {
+    Kind(SyntaxKind),
+    Name,
+    Ident,
+}
+
+impl Display for Expected {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Kind(kind) => Debug::fmt(kind, f),
+            Self::Name => f.write_str("name"),
+            Self::Ident => f.write_str("identifier"),
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct ExpectedError {
     pos: usize,
-    kind: SyntaxKind,
+    kind: Expected,
 }
 
 impl Display for ExpectedError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("expected ")?;
-        Debug::fmt(&self.kind, f)
+        Display::fmt(&self.kind, f)
     }
 }
 
@@ -64,11 +81,11 @@ impl std::error::Error for ExpectedError {
 }
 
 impl ExpectedError {
-    pub(crate) fn new(pos: usize, kind: SyntaxKind) -> Self {
+    pub(crate) fn new(pos: usize, kind: Expected) -> Self {
         Self { pos, kind }
     }
 
-    pub(crate) fn report(pos: usize, kind: SyntaxKind) -> Report<Self> {
+    pub(crate) fn report(pos: usize, kind: Expected) -> Report<Self> {
         Report::new(Self::new(pos, kind))
     }
 }
@@ -99,35 +116,5 @@ impl UnmatchedError {
 
     pub(crate) fn report(pos: usize, closing: SyntaxKind) -> Report<Self> {
         Report::new(Self::new(pos, closing))
-    }
-}
-
-#[derive(Debug)]
-pub struct ExpectedIdentifierError {
-    pos: usize,
-}
-
-impl Display for ExpectedIdentifierError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str("expected identifier")
-    }
-}
-
-impl std::error::Error for ExpectedIdentifierError {
-    fn provide<'a>(&'a self, demand: &mut Demand<'a>) {
-        demand.provide_value(Label::new(
-            format!("expected identifer"),
-            Either::Left(self.pos),
-        ));
-    }
-}
-
-impl ExpectedIdentifierError {
-    pub(crate) fn new(pos: usize) -> Self {
-        Self { pos }
-    }
-
-    pub(crate) fn report(pos: usize) -> Report<Self> {
-        Report::new(Self::new(pos))
     }
 }
