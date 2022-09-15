@@ -51,6 +51,7 @@ pub(crate) struct Kind {
 #[derive(serde::Serialize, serde::Deserialize)]
 pub(crate) struct Syntax {
     pub(crate) shortcut: Option<String>,
+    pub(crate) contextual: Option<String>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]

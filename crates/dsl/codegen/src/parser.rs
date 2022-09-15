@@ -8,7 +8,9 @@ use quote::{__private::TokenTree, format_ident, quote};
 use syn::__private::TokenStream;
 
 use crate::{
+    config::Is,
     hash::hash_verify,
+    lexer::find_is,
     utils,
     utils::{camel_case_to_pascal_case, CheckError},
     Config,
@@ -73,6 +75,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         quote!(Kind::#kind => Self::#other)
     });
 
+    let trivia = find_is(config, &Is::Trivia);
+
     let shortcuts = config
         .kind
         .iter()
@@ -93,11 +97,19 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
             })
         });
 
+    let contextual = config.syntax.iter().filter_map(|(key, value)| {
+        value.contextual.as_ref().map(|ident| {
+            let key = format_ident!("{}", camel_case_to_pascal_case(key));
+            quote!(#ident => Self::#key)
+        })
+    });
+
     let type_ = quote! {
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
         pub enum SyntaxKind {
             #(#entries,)*
 
+            EndOfFile,
             Error,
             Tombstone
         }
@@ -108,6 +120,26 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
                     #(#kinds,)*
                     Kind::Error => Self::Error
                 }
+            }
+        }
+
+        impl SyntaxKind {
+            #[must_use]
+            pub const fn trivia(&self) -> &'static [Self] {
+                &[#(Self::#trivia),*]
+            }
+
+            #[must_use]
+            pub fn is_trivia(&self) -> bool {
+                self.trivia().contains(self)
+            }
+
+            pub fn from_contextual_keyword(ident: &str) -> Option<SyntaxKind> {
+                let kw = match ident {
+                    #(#contextual,)*
+                    _ => return None,
+                };
+                Some(kw)
             }
         }
 

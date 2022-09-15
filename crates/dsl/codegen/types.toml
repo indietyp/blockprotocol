@@ -110,17 +110,25 @@ regex = ["[+-]?(([1-9][0-9]*)|0)\\.[0-9]+"]
 priority = 16
 is = ['literal']
 
-[kind.kw-true]
+[kind.true-kw]
 token = "true"
 is = ['literal']
 
-[kind.kw-false]
+[kind.false-kw]
 token = "false"
 is = ['literal']
 
-[kind.kw-null]
+[kind.null-kw]
 token = "null"
 is = ['literal']
+
+# this is for now reserved
+[kind.let-kw]
+token = "let"
+
+# this is for now reserved
+[kind.fn-kw]
+token = "fn"
 
 [kind.whitespace]
 regex = ["\\s"]
@@ -187,3 +195,18 @@ shortcut = "::"
 shortcut = ".."
 [syntax.dot2-eq]
 shortcut = "..="
+
+[syntax.data-kw]
+contextual = "data"
+[syntax.prop-kw]
+contextual = "prop"
+[syntax.link-kw]
+contextual = "link"
+[syntax.entity-kw]
+contextual = "entity"
+[syntax.alias-kw]
+contextual = "alias"
+[syntax.use-kw]
+contextual = "use"
+[syntax.set-kw]
+contextual = "set"

@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 9B29923AA873EB31CEBB3A67901D0E885FB8380731F99ABBF0F22E9B0CA44430
+//! GENERATED WITH 026877BED57CE5769FA9448A3324F08A82F5841809A625ED58D076AA096832C0
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -33,9 +33,11 @@ pub enum SyntaxKind {
     String,
     Integer,
     Number,
-    KwTrue,
-    KwFalse,
-    KwNull,
+    TrueKw,
+    FalseKw,
+    NullKw,
+    LetKw,
+    FnKw,
     Whitespace,
     Comment,
     DataStmt,
@@ -78,6 +80,14 @@ pub enum SyntaxKind {
     Colon2,
     Dot2,
     Dot2Eq,
+    DataKw,
+    PropKw,
+    LinkKw,
+    EntityKw,
+    AliasKw,
+    UseKw,
+    SetKw,
+    EndOfFile,
     Error,
     Tombstone,
 }
@@ -111,13 +121,40 @@ impl From<Kind> for SyntaxKind {
             Kind::String => Self::String,
             Kind::Integer => Self::Integer,
             Kind::Number => Self::Number,
-            Kind::KwTrue => Self::KwTrue,
-            Kind::KwFalse => Self::KwFalse,
-            Kind::KwNull => Self::KwNull,
+            Kind::TrueKw => Self::TrueKw,
+            Kind::FalseKw => Self::FalseKw,
+            Kind::NullKw => Self::NullKw,
+            Kind::LetKw => Self::LetKw,
+            Kind::FnKw => Self::FnKw,
             Kind::Whitespace => Self::Whitespace,
             Kind::Comment => Self::Comment,
             Kind::Error => Self::Error,
         }
     }
 }
-macro_rules ! T { [:] => { $ crate :: SyntaxKind :: Colon } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [?] => { $ crate :: SyntaxKind :: QuestionMark } ; [=] => { $ crate :: SyntaxKind :: Equals } ; [>] => { $ crate :: SyntaxKind :: GreaterThan } ; [<] => { $ crate :: SyntaxKind :: LessThan } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [*] => { $ crate :: SyntaxKind :: Star } ; [~] => { $ crate :: SyntaxKind :: Tilde } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [|] => { $ crate :: SyntaxKind :: Pipe } ; [@] => { $ crate :: SyntaxKind :: At } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [&] => { $ crate :: SyntaxKind :: Ampersand } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [,] => { $ crate :: SyntaxKind :: Comma } ; ['}'] => { $ crate :: SyntaxKind :: LBrace } ; ['{'] => { $ crate :: SyntaxKind :: RBrace } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [true] => { $ crate :: SyntaxKind :: KwTrue } ; [false] => { $ crate :: SyntaxKind :: KwFalse } ; [null] => { $ crate :: SyntaxKind :: KwNull } ; [::] => { $ crate :: SyntaxKind :: Colon2 } ; [..] => { $ crate :: SyntaxKind :: Dot2 } ; [..=] => { $ crate :: SyntaxKind :: Dot2Eq } ; }
+impl SyntaxKind {
+    #[must_use]
+    pub const fn trivia(&self) -> &'static [Self] {
+        &[Self::Whitespace, Self::Comment]
+    }
+
+    #[must_use]
+    pub fn is_trivia(&self) -> bool {
+        self.trivia().contains(self)
+    }
+
+    pub fn from_contextual_keyword(ident: &str) -> Option<SyntaxKind> {
+        let kw = match ident {
+            "data" => Self::DataKw,
+            "prop" => Self::PropKw,
+            "link" => Self::LinkKw,
+            "entity" => Self::EntityKw,
+            "alias" => Self::AliasKw,
+            "use" => Self::UseKw,
+            "set" => Self::SetKw,
+            _ => return None,
+        };
+        Some(kw)
+    }
+}
+macro_rules ! T { [:] => { $ crate :: SyntaxKind :: Colon } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [?] => { $ crate :: SyntaxKind :: QuestionMark } ; [=] => { $ crate :: SyntaxKind :: Equals } ; [>] => { $ crate :: SyntaxKind :: GreaterThan } ; [<] => { $ crate :: SyntaxKind :: LessThan } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [*] => { $ crate :: SyntaxKind :: Star } ; [~] => { $ crate :: SyntaxKind :: Tilde } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [|] => { $ crate :: SyntaxKind :: Pipe } ; [@] => { $ crate :: SyntaxKind :: At } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [&] => { $ crate :: SyntaxKind :: Ampersand } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [,] => { $ crate :: SyntaxKind :: Comma } ; ['}'] => { $ crate :: SyntaxKind :: LBrace } ; ['{'] => { $ crate :: SyntaxKind :: RBrace } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [true] => { $ crate :: SyntaxKind :: TrueKw } ; [false] => { $ crate :: SyntaxKind :: FalseKw } ; [null] => { $ crate :: SyntaxKind :: NullKw } ; [let] => { $ crate :: SyntaxKind :: LetKw } ; [fn] => { $ crate :: SyntaxKind :: FnKw } ; [::] => { $ crate :: SyntaxKind :: Colon2 } ; [..] => { $ crate :: SyntaxKind :: Dot2 } ; [..=] => { $ crate :: SyntaxKind :: Dot2Eq } ; }

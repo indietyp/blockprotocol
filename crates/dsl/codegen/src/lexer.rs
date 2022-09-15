@@ -46,7 +46,7 @@ impl Display for GenerationError {
 
 impl std::error::Error for GenerationError {}
 
-fn find_is<'a>(config: &'a Config, is: &'a Is) -> impl Iterator<Item = Ident> + 'a {
+pub(crate) fn find_is<'a>(config: &'a Config, is: &'a Is) -> impl Iterator<Item = Ident> + 'a {
     config.kind.iter().filter_map(|(key, value)| {
         value
             .is

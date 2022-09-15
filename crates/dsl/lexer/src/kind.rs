@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 9B29923AA873EB31CEBB3A67901D0E885FB8380731F99ABBF0F22E9B0CA44430
+//! GENERATED WITH 026877BED57CE5769FA9448A3324F08A82F5841809A625ED58D076AA096832C0
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
@@ -64,11 +64,15 @@ pub enum Kind {
     #[regex("[+-]?(([1-9][0-9]*)|0)\\.[0-9]+")]
     Number,
     #[token("true")]
-    KwTrue,
+    TrueKw,
     #[token("false")]
-    KwFalse,
+    FalseKw,
     #[token("null")]
-    KwNull,
+    NullKw,
+    #[token("let")]
+    LetKw,
+    #[token("fn")]
+    FnKw,
     #[regex("\\s")]
     Whitespace,
     #[regex("//.*")]
@@ -93,9 +97,9 @@ impl Kind {
             Self::String,
             Self::Integer,
             Self::Number,
-            Self::KwTrue,
-            Self::KwFalse,
-            Self::KwNull,
+            Self::TrueKw,
+            Self::FalseKw,
+            Self::NullKw,
         ]
     }
 

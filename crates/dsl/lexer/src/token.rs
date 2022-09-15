@@ -3,28 +3,28 @@ use text_size::TextRange;
 use crate::kind::Kind;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
-pub struct Token<'a> {
-    kind: Kind,
+pub struct Token<'a, T: Copy = Kind> {
+    kind: T,
     text: &'a str,
     range: TextRange,
 }
 
-impl<'a> Token<'a> {
-    pub(crate) fn new(kind: Kind, text: &'a str, range: TextRange) -> Self {
+impl<'a, T: Copy> Token<'a, T> {
+    pub const fn new(kind: T, text: &'a str, range: TextRange) -> Self {
         Self { kind, text, range }
     }
 }
 
-impl Token<'_> {
-    pub fn kind(&self) -> Kind {
+impl<'a, T: Copy> Token<'a, T> {
+    pub const fn kind(&self) -> T {
         self.kind
     }
 
-    pub fn text(&self) -> &str {
+    pub const fn text(&self) -> &'a str {
         self.text
     }
 
-    pub fn range(&self) -> TextRange {
+    pub const fn range(&self) -> TextRange {
         self.range
     }
 }
