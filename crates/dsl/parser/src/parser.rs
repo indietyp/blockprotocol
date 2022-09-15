@@ -43,6 +43,10 @@ impl<'t> Parser<'t> {
         }
     }
 
+    pub(crate) fn position(&self) -> usize {
+        self.pos
+    }
+
     pub(crate) fn finish(self) -> Events {
         Events::new(self.events)
     }
@@ -179,13 +183,13 @@ impl<'t> Parser<'t> {
     }
 
     /// Create an error node and consume the next token.
-    pub(crate) fn err_and_bump(&mut self, message: Report<ParserError>) {
-        self.err_recover(message, TokenSet::EMPTY);
+    pub(crate) fn err_and_bump(&mut self, message: Report<impl Context>) {
+        self.err_recover(message.change_context(ParserError), TokenSet::EMPTY);
     }
 
     /// Create an error node and consume the next token.
-    /// We only every recover until we spot a recovery token, these are specified in `recovert`
-    pub(crate) fn err_recover(&mut self, message: Report<ParserError>, recovery: TokenSet) {
+    /// We only every recover until we spot a recovery token, these are specified in `recovery`
+    pub(crate) fn err_recover(&mut self, message: Report<impl Context>, recovery: TokenSet) {
         match self.current() {
             T!['{'] | T!['}'] => {
                 self.error(message);

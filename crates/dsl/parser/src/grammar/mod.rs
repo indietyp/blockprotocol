@@ -1,4 +1,8 @@
-use crate::{parser::Parser, SyntaxKind};
+mod attributes;
+mod items;
+mod paths;
+
+use crate::{error::ExpectedIdentifierError, parser::Parser, SyntaxKind};
 
 #[derive(PartialEq, Eq)]
 pub(super) enum Semicolon {
@@ -23,7 +27,7 @@ pub(crate) mod entry {
             let _ = paths::type_path(p);
         }
         pub(crate) fn item(p: &mut Parser<'_>) {
-            items::item_or_macro(p, true);
+            items::item(p, true);
         }
         // Parse a meta item , which excluded [], e.g : #[ MetaItem ]
         pub(crate) fn attribute(p: &mut Parser<'_>) {
@@ -55,4 +59,14 @@ pub(crate) fn reparser(
     // };
     // Some(res)
     None
+}
+
+fn name_ref(p: &mut Parser<'_>) {
+    if p.at(SyntaxKind::Ident) {
+        let m = p.start();
+        p.bump(SyntaxKind::Ident);
+        m.complete(p, SyntaxKind::NameRef);
+    } else {
+        p.err_and_bump(ExpectedIdentifierError::report(p.position()));
+    }
 }

@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 687DDC1A5D46A3349CA8DFDFC0F1F33244EB01BC34B28DB5449E337E1CB43553
+//! GENERATED WITH BC3D012CCB64170C33E89445766615429F7526ACB4BDF0518477E7157D1E1614
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
@@ -14,6 +14,8 @@ pub enum Kind {
     Dot,
     #[token("?")]
     QuestionMark,
+    #[token("!")]
+    ExclamationMark,
     #[token("=")]
     Equals,
     #[token(">")]
@@ -130,7 +132,7 @@ impl Kind {
 
     #[must_use]
     pub const fn prefix_ops(&self) -> &'static [Self] {
-        &[Self::Plus, Self::Minus]
+        &[Self::ExclamationMark, Self::Plus, Self::Minus]
     }
 
     #[must_use]

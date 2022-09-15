@@ -10,6 +10,10 @@ is = ['infix-op']
 token = "?"
 is = ['postfix-op']
 
+[kind.exclamation-mark]
+token = "!"
+is = ['prefix-op']
+
 [kind.equals]
 token = "="
 is = ['infix-op']
@@ -161,7 +165,6 @@ is = ['trivia']
 [syntax.string-expr]
 [syntax.map-expr]
 [syntax.list-expr]
-[syntax.module-expr]
 [syntax.paren-expr]
 [syntax.infix-expr]
 [syntax.prefix-expr]
@@ -177,14 +180,19 @@ is = ['trivia']
 [syntax.map-type]
 [syntax.tuple-type]
 
+[syntax.path]
+[syntax.path-segment]
+
 # This identifier is only used for references, other variables use the `_`,
 # otherwise arithmatic would be impossible.
-[syntax.reference-ident]
-[syntax.reference]
-[syntax.variable]
+[syntax.reference-ref]
+[syntax.name-ref]
 
 [syntax.comment-doc]
+
 [syntax.attribute]
+[syntax.meta]
+[syntax.token-tree]
 
 # TODO: function expression and such
 [syntax.call-expr]
