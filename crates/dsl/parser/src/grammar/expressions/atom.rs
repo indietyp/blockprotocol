@@ -9,7 +9,7 @@ pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     SyntaxKind::String,
 ]);
 
-fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
+pub(crate) fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
     if p.nth_at(0, SyntaxKind::Ident)
         && p.nth_at(1, SyntaxKind::String)
         && p.nth_at(2, SyntaxKind::Ident)

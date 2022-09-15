@@ -49,6 +49,7 @@ pub enum Expected {
     Kind(SyntaxKind),
     Name,
     Ident,
+    String,
 }
 
 impl Display for Expected {
@@ -57,6 +58,7 @@ impl Display for Expected {
             Self::Kind(kind) => Debug::fmt(kind, f),
             Self::Name => f.write_str("name"),
             Self::Ident => f.write_str("identifier"),
+            Self::String => f.write_str("string"),
         }
     }
 }

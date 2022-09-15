@@ -1,6 +1,9 @@
 use crate::{
-    error::UnmatchedError,
-    grammar::{name, name_ref},
+    error::{Expected, ExpectedError, UnmatchedError},
+    grammar::{
+        expressions::atom::{literal, literal_string},
+        name, name_ref,
+    },
     parser::Parser,
     token_set::TokenSet,
     SyntaxKind,
@@ -34,6 +37,106 @@ fn prop(p: &mut Parser) {
     if p.at(SyntaxKind::Ident) {
         name(p, ITEM_RECOVERY_SET);
     }
+
+    if literal_string(p).is_none() {
+        p.err_recover(
+            ExpectedError::report(p.position(), Expected::String),
+            ITEM_RECOVERY_SET,
+        );
+    }
+
+    p.expect(T![:]);
+
+    // TODO: types
+
+    if p.eat(T![=]) {
+        // TODO: default
+    }
+
+    p.eat(T![;]);
+}
+
+/// `entity` structurally can be described as:
+///
+/// ```text
+/// entity [id] "string": type (record w/ links) [= default] [;]
+/// ```
+fn entity(p: &mut Parser) {
+    assert!(p.at_contextual_kw(SyntaxKind::EntityKw));
+    p.bump(SyntaxKind::Ident);
+
+    if p.at(SyntaxKind::Ident) {
+        name(p, ITEM_RECOVERY_SET);
+    }
+
+    if literal_string(p).is_none() {
+        p.err_recover(
+            ExpectedError::report(p.position(), Expected::String),
+            ITEM_RECOVERY_SET,
+        )
+    }
+
+    p.expect(T![:]);
+
+    // TODO: type
+
+    if p.eat(T![=]) {
+        // TODO: default
+    }
+
+    p.eat(T![;]);
+}
+
+/// `data` structurally can be described as:
+///
+/// ```text
+/// data [id] "string": type (tbd) [;]
+/// ```
+///
+/// TODO: insert id once it has been run once and an id as been assigned
+fn data(p: &mut Parser) {
+    assert!(p.at_contextual_kw(SyntaxKind::DataKw));
+    p.bump(SyntaxKind::Ident);
+
+    if p.at(SyntaxKind::Ident) {
+        name(p, ITEM_RECOVERY_SET);
+    }
+
+    if literal_string(p).is_none() {
+        p.err_recover(
+            ExpectedError::report(p.position(), Expected::String),
+            ITEM_RECOVERY_SET,
+        );
+    }
+
+    p.expect(T![:]);
+
+    // TODO: type
+
+    p.eat(T![;]);
+}
+
+/// `link` structurally can be described as:
+///
+/// ```text
+/// link [id] "string" [;]
+/// ```
+fn link(p: &mut Parser) {
+    assert!(p.at_contextual_kw(SyntaxKind::LinkKw));
+    p.bump(SyntaxKind::Ident);
+
+    if p.at(SyntaxKind::Ident) {
+        name(p, ITEM_RECOVERY_SET);
+    }
+
+    if literal_string(p).is_none() {
+        p.err_recover(
+            ExpectedError::report(p.position(), Expected::String),
+            ITEM_RECOVERY_SET,
+        );
+    }
+
+    p.eat(T![;]);
 }
 
 pub(crate) fn token_tree(p: &mut Parser<'_>) {

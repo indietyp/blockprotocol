@@ -1,1 +1,1 @@
-mod atom;
+pub(crate) mod atom;
