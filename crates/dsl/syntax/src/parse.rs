@@ -13,7 +13,7 @@ use crate::{error::SyntaxError, tree::SyntaxNode};
 ///
 /// Note that we always produce a syntax tree, even for completely invalid
 /// files.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub struct Parse<T> {
     green: GreenNode,
     errors: Arc<Vec<Report<SyntaxError>>>,

@@ -1,7 +1,10 @@
 //! See [`Output`]
-//! Taken from
+//! Adapted from
+//! https://github.com/rust-lang/rust-analyzer/blob/6b163c301f70d0e1246fb898b5f5edcc4d03fa4c/crates/parser/src/output.rs
 
-use crate::kind::SyntaxKind;
+use error_stack::Report;
+
+use crate::{error::ParserError, kind::SyntaxKind};
 
 /// Output of the parser -- a DFS traversal of a concrete syntax tree.
 ///
@@ -19,7 +22,7 @@ pub struct Output {
     ///
     ///     |16 bit kind|8 bit n_input_tokens|4 bit tag|4 bit leftover|
     event: Vec<u32>,
-    error: Vec<String>,
+    error: Vec<Report<ParserError>>,
 }
 
 #[derive(Debug)]
@@ -32,18 +35,14 @@ pub enum Step<'a> {
         kind: SyntaxKind,
     },
     Exit,
-    Error {
-        msg: &'a str,
-    },
+    Error(&'a Report<ParserError>),
 }
 
 impl Output {
     pub fn iter(&self) -> impl Iterator<Item = Step<'_>> {
         self.event.iter().map(|&event| {
             if event & 0b1 == 0 {
-                return Step::Error {
-                    msg: self.error[(event as usize) >> 1].as_str(),
-                };
+                return Step::Error(&self.error[(event as usize) >> 1]);
             }
             let tag = ((event & 0x0000_00F0) >> 4) as u8;
             match tag {
@@ -80,9 +79,9 @@ impl Output {
         self.event.push(e)
     }
 
-    pub(crate) fn error(&mut self, error: String) {
+    pub(crate) fn error(&mut self, report: Report<ParserError>) {
         let idx = self.error.len();
-        self.error.push(error);
+        self.error.push(report);
         let e = (idx as u32) << 1;
         self.event.push(e);
     }

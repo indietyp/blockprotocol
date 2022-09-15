@@ -1,11 +1,14 @@
 //! This has been adapted from
 //! https://github.com/rust-lang/rust-analyzer/blob/6b163c301f70d0e1246fb898b5f5edcc4d03fa4c/crates/parser/src/event.rs
 
-use std::ops::{Deref, DerefMut};
+use std::{
+    mem,
+    ops::{Deref, DerefMut},
+};
 
 use error_stack::Report;
 
-use crate::{error::ParserError, kind::SyntaxKind};
+use crate::{error::ParserError, kind::SyntaxKind, output::Output};
 
 pub(crate) enum Event {
     /// This event signifies the start of the node.
@@ -82,7 +85,55 @@ pub(crate) struct Events {
 
 impl Events {
     pub(crate) fn process(self) -> Output {
-        
+        let Self { inner } = self;
+        let mut res = Output::default();
+        let mut forward_parents = Vec::new();
+
+        for i in 0..inner.len() {
+            match mem::replace(&mut inner[i], Event::tombstone()) {
+                Event::Start {
+                    kind,
+                    forward_parent,
+                } => {
+                    // For events[A, B, C], B is A's forward_parent, C is B's forward_parent,
+                    // in the normal control flow, the parent-child relation: `A -> B -> C`,
+                    // while with the magic forward_parent, it writes: `C <- B <- A`.
+
+                    // append `A` into parents.
+                    forward_parents.push(kind);
+                    let mut idx = i;
+                    let mut fp = forward_parent;
+                    while let Some(fwd) = fp {
+                        idx += fwd as usize;
+                        // append `A`'s forward_parent `B`
+                        fp = match mem::replace(&mut inner[idx], Event::tombstone()) {
+                            Event::Start {
+                                kind,
+                                forward_parent,
+                            } => {
+                                forward_parents.push(kind);
+                                forward_parent
+                            }
+                            _ => unreachable!(),
+                        };
+                        // append `B`'s forward_parent `C` in the next stage.
+                    }
+
+                    for kind in forward_parents.drain(..).rev() {
+                        if kind != SyntaxKind::Tombstone {
+                            res.enter_node(kind);
+                        }
+                    }
+                }
+                Event::Finish => res.leave_node(),
+                Event::Token { kind, n_raw_tokens } => {
+                    res.token(kind, n_raw_tokens);
+                }
+                Event::Error(report) => res.error(report),
+            }
+        }
+
+        res
     }
 }
 

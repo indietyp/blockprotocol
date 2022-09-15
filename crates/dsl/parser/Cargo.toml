@@ -10,3 +10,5 @@ error-stack = { git = "https://github.com/hashintel/hash.git" }
 
 num-derive = "0.3.3"
 num-traits = "0.2.15"
+
+lexer = {path = "../lexer"}
