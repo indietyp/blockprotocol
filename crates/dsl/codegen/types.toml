@@ -161,8 +161,6 @@ is = ['trivia']
 [syntax.record-expr]
 [syntax.record-expr-entry]
 [syntax.literal]
-# this is special, because a string might be prefixed and suffixed by an identifier
-[syntax.string-expr]
 [syntax.map-expr]
 [syntax.list-expr]
 [syntax.paren-expr]
@@ -182,6 +180,11 @@ is = ['trivia']
 
 [syntax.path]
 [syntax.path-segment]
+
+# this is special, because a string might be prefixed and suffixed by an identifier
+[syntax.literal-string]
+[syntax.literal-string-prefix]
+[syntax.literal-string-suffix]
 
 # This identifier is only used for references, other variables use the `_`,
 # otherwise arithmatic would be impossible.

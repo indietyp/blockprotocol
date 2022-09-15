@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 33B6026F6414097D91F81C04DF9F551E9B7B34AC1C1223AAD7386F6C09B74CCF
+//! GENERATED WITH 873E90676E35FB8B9E928F01E3F8E6713D0D0553BE05DED9653B900952AA6533
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -57,7 +57,6 @@ pub enum SyntaxKind {
     RecordExpr,
     RecordExprEntry,
     Literal,
-    StringExpr,
     MapExpr,
     ListExpr,
     ParenExpr,
@@ -74,6 +73,9 @@ pub enum SyntaxKind {
     TupleType,
     Path,
     PathSegment,
+    LiteralString,
+    LiteralStringPrefix,
+    LiteralStringSuffix,
     ReferenceRef,
     Name,
     NameRef,
