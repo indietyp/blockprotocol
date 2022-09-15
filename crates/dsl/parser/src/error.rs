@@ -1,6 +1,6 @@
 use std::{
     any::Demand,
-    fmt::{Debug, Display, Formatter, Write},
+    fmt::{Debug, Display, Formatter},
 };
 
 use either::Either;

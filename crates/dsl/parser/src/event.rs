@@ -84,6 +84,10 @@ pub(crate) struct Events {
 }
 
 impl Events {
+    pub(crate) fn new(events: Vec<Event>) -> Self {
+        Self { inner: events }
+    }
+
     pub(crate) fn process(self) -> Output {
         let Self { inner } = self;
         let mut res = Output::default();

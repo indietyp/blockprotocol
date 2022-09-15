@@ -8,7 +8,7 @@ use limit::Limit;
 
 use crate::{
     error::{ExpectedError, ParserError},
-    event::Event,
+    event::{Event, Events},
     input::Input,
     kind::SyntaxKind,
     marker::Marker,
@@ -43,8 +43,8 @@ impl<'t> Parser<'t> {
         }
     }
 
-    pub(crate) fn finish(self) -> Vec<Event> {
-        self.events
+    pub(crate) fn finish(self) -> Events {
+        Events::new(self.events)
     }
 
     /// Returns the kind of the current token.

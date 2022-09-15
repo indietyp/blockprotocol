@@ -138,19 +138,20 @@ is = ['trivia']
 regex = ["//.*"]
 is = ['trivia']
 
-[syntax.data-stmt]
-[syntax.prop-stmt]
-[syntax.link-stmt]
-[syntax.entity-stmt]
-[syntax.let-stmt]
-[syntax.use-stmt]
-[syntax.set-stmt] # TODO: consider removing this (only used for configuration?!)
+[syntax.data-item]
+[syntax.prop-item]
+[syntax.link-item]
+[syntax.entity-item]
+[syntax.let-item]
+[syntax.use-item]
+[syntax.set-item] # TODO: consider removing this (only used for configuration?!)
 
 # TODO: this still uses `=`
-[syntax.alias-data-stmt]
-[syntax.alias-prop-stmt]
-[syntax.alias-link-stmt]
-[syntax.alias-entity-stmt]
+[syntax.alias-item]
+[syntax.alias-data-item]
+[syntax.alias-prop-item]
+[syntax.alias-link-item]
+[syntax.alias-entity-item]
 
 [syntax.record-expr]
 [syntax.record-expr-entry]
