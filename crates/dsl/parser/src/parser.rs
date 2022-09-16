@@ -34,7 +34,7 @@ pub(crate) struct Parser<'t> {
 }
 
 impl<'t> Parser<'t> {
-    pub(super) fn new(inp: &'t Input) -> Parser<'t> {
+    pub(super) const fn new(inp: &'t Input) -> Parser<'t> {
         Parser {
             inp,
             pos: 0,
@@ -43,7 +43,7 @@ impl<'t> Parser<'t> {
         }
     }
 
-    pub(crate) fn position(&self) -> usize {
+    pub(crate) const fn position(&self) -> usize {
         self.pos
     }
 
@@ -122,6 +122,7 @@ impl<'t> Parser<'t> {
     /// consumed between the `start` and the corresponding `Marker::complete`
     /// belong to the same node.
     pub(crate) fn start(&mut self) -> Marker {
+        #[expect(clippy::cast_possible_truncation)]
         let pos = self.events.len() as u32;
         self.push_event(Event::tombstone());
         Marker::new(pos)

@@ -2,7 +2,8 @@
 //! https://github.com/rust-lang/rust-analyzer/blob/6b163c301f70d0e1246fb898b5f5edcc4d03fa4c/crates/parser/src/grammar/attributes.rs
 
 use crate::{
-    grammar::{items, paths},
+    error::{Expected, ExpectedError},
+    grammar::{expressions, items, paths},
     parser::Parser,
     SyntaxKind,
 };
@@ -45,9 +46,9 @@ pub(super) fn meta(p: &mut Parser<'_>) {
     match p.current() {
         T![=] => {
             p.bump(T![=]);
-            // TODO
+
             if !expressions::expr(p) {
-                p.error("expected expression");
+                p.error(ExpectedError::report(p.pos, Expected::Expr));
             }
         }
         T!['('] | T!['['] | T!['{'] => items::token_tree(p),

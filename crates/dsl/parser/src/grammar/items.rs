@@ -1,6 +1,6 @@
 use crate::{
     error::{Expected, ExpectedError, UnmatchedError},
-    grammar::{expressions::atom::literal_string, name, name_ref, paths::path},
+    grammar::{expressions::atom::literal_string, name, paths::path},
     marker::Marker,
     parser::Parser,
     token_set::TokenSet,
@@ -71,7 +71,7 @@ fn entity(p: &mut Parser, m: Marker) {
         p.err_recover(
             ExpectedError::report(p.position(), Expected::String),
             ITEM_RECOVERY_SET,
-        )
+        );
     }
 
     p.expect(T![:]);
@@ -195,7 +195,7 @@ pub(crate) fn token_tree(p: &mut Parser<'_>) {
                 return;
             }
             token @ (T![')'] | T![']']) => {
-                p.err_and_bump(UnmatchedError::report(p.position(), token))
+                p.err_and_bump(UnmatchedError::report(p.position(), token));
             }
             _ => p.bump_any(),
         }

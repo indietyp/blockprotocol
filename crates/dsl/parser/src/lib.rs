@@ -94,11 +94,11 @@ pub enum PrefixEntryPoint {
 impl PrefixEntryPoint {
     pub fn parse(&self, input: &Input) -> Output {
         let entry_point: fn(&'_ mut parser::Parser<'_>) = match self {
-            PrefixEntryPoint::Ty => grammar::entry::prefix::ty,
-            PrefixEntryPoint::Expr => grammar::entry::prefix::expr,
-            PrefixEntryPoint::Path => grammar::entry::prefix::path,
-            PrefixEntryPoint::Item => grammar::entry::prefix::item,
-            PrefixEntryPoint::Attribute => grammar::entry::prefix::attribute,
+            Self::Ty => grammar::entry::prefix::ty,
+            Self::Expr => grammar::entry::prefix::expr,
+            Self::Path => grammar::entry::prefix::path,
+            Self::Item => grammar::entry::prefix::item,
+            Self::Attribute => grammar::entry::prefix::attribute,
         };
         let mut p = parser::Parser::new(input);
         entry_point(&mut p);
@@ -117,7 +117,7 @@ impl Reparser {
         node: SyntaxKind,
         first_child: Option<SyntaxKind>,
         parent: Option<SyntaxKind>,
-    ) -> Option<Reparser> {
+    ) -> Option<Self> {
         grammar::reparser(node, first_child, parent).map(Reparser)
     }
 
@@ -126,7 +126,7 @@ impl Reparser {
     /// Tokens must start with `{`, end with `}` and form a valid brace
     /// sequence.
     pub fn parse(self, tokens: &Input) -> Output {
-        let Reparser(r) = self;
+        let Self(r) = self;
         let mut p = parser::Parser::new(tokens);
         r(&mut p);
 

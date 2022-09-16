@@ -40,8 +40,9 @@ impl<'a> Lexer<'a> {
     /// This panics if the source string is larger than 4Gb
     #[must_use]
     pub fn new(input: &'a str) -> Self {
+        // Note: we `+ 1` here because the `parser` adds an additional `SyntaxToken::EndOfFile`.
         assert!(
-            u32::try_from(input.as_bytes().len()).is_ok(),
+            u32::try_from(input.as_bytes().len() + 1).is_ok(),
             "The input has an internal limit of 4Gb per file"
         );
 

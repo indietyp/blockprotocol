@@ -9,7 +9,7 @@ pub(crate) mod pratt;
 
 // for now this is empty
 #[derive(Clone, Copy)]
-struct Restrictions {}
+pub(crate) struct Restrictions {}
 
 // record type: S {ref-ref = default}
 // record expr: S {ref-ref: 12, ref-ref: 12}

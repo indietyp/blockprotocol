@@ -24,12 +24,12 @@ pub struct Input {
 impl Input {
     #[inline]
     pub fn push(&mut self, kind: SyntaxKind) {
-        self.push_impl(kind, SyntaxKind::EndOfFile)
+        self.push_impl(kind, SyntaxKind::EndOfFile);
     }
 
     #[inline]
     pub fn push_ident(&mut self, contextual_kind: SyntaxKind) {
-        self.push_impl(SyntaxKind::Ident, contextual_kind)
+        self.push_impl(SyntaxKind::Ident, contextual_kind);
     }
 
     /// Sets jointness for the last token we've pushed.
@@ -86,7 +86,7 @@ impl Input {
 }
 
 impl Input {
-    fn bit_index(&self, n: usize) -> (usize, usize) {
+    const fn bit_index(&self, n: usize) -> (usize, usize) {
         let idx = n / (bits::BITS as usize);
         let b_idx = n % (bits::BITS as usize);
         (idx, b_idx)

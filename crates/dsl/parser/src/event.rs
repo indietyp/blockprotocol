@@ -71,8 +71,8 @@ pub(crate) enum Event {
 }
 
 impl Event {
-    pub(crate) fn tombstone() -> Self {
-        Event::Start {
+    pub(crate) const fn tombstone() -> Self {
+        Self::Start {
             kind: SyntaxKind::Tombstone,
             forward_parent: None,
         }
@@ -89,7 +89,7 @@ impl Events {
     }
 
     pub(crate) fn process(self) -> Output {
-        let Self { inner } = self;
+        let Self { mut inner } = self;
         let mut res = Output::default();
         let mut forward_parents = Vec::new();
 
@@ -123,6 +123,7 @@ impl Events {
                         // append `B`'s forward_parent `C` in the next stage.
                     }
 
+                    #[expect(clippy::iter_with_drain, reason = "false-positive")]
                     for kind in forward_parents.drain(..).rev() {
                         if kind != SyntaxKind::Tombstone {
                             res.enter_node(kind);

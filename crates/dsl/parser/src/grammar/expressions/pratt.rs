@@ -1,9 +1,6 @@
 //! Implementation of the algorithm described in:
 //! https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 //!
-//! This has been adapted from
-//! https://github.com/segeljakt/pratt/blob/56e194b52d5defd00ef32f6ada9aad98e0346f95/src/lib.rs
-//!
 //! Our precedence values are multiplied by 10 to make sure we're able to modify and add new ones
 //! easily.
 //!
@@ -22,30 +19,17 @@ use crate::{
 };
 
 #[derive(PartialEq, PartialOrd, Copy, Clone)]
-pub(crate) struct Precedence(pub u32);
+pub(crate) struct Precedence(pub(crate) u32);
 
 impl Precedence {
-    const fn raise(mut self) -> Precedence {
+    const fn raise(mut self) -> Self {
         self.0 += 1;
         self
     }
 
-    const fn lower(mut self) -> Precedence {
+    const fn lower(mut self) -> Self {
         self.0 -= 1;
         self
-    }
-
-    const fn normalize(mut self) -> Precedence {
-        self.0 *= 10;
-        self
-    }
-
-    const fn min() -> Precedence {
-        Precedence(u32::MIN)
-    }
-
-    const fn max() -> Precedence {
-        Precedence(u32::MAX)
     }
 }
 
@@ -68,43 +52,40 @@ pub(crate) struct Affix;
 const LHS_FIRST: TokenSet = atom::ATOM_EXPR_FIRST.union(TokenSet::new(&[T![!], T![.], T![-]]));
 
 fn lhs(p: &mut Parser, r: Restrictions) -> Option<(CompletedMarker, BlockLike)> {
-    match Affix::prefix(p) {
-        //> test expr unary
-        Some((kind, precedence)) => {
-            let m = p.start();
-            p.bump(kind);
+    if let Some((kind, precedence)) = Affix::prefix(p) {
+        let m = p.start();
+        p.bump(kind);
 
-            expr_bp(p, None, r, precedence);
+        expr_bp(p, None, r, precedence);
 
-            let cm = m.complete(p, SyntaxKind::PrefixExpr);
+        let cm = m.complete(p, SyntaxKind::PrefixExpr);
 
-            Some((cm, BlockLike::NotBlock))
-        }
-        _ => {
-            let m;
+        Some((cm, BlockLike::NotBlock))
+    } else {
+        let m;
 
-            //> test expr full_range
-            for op in [T![..=], T![..]] {
-                if p.at(op) {
-                    // SAFETY: this in infallible, because it's always defined
-                    let precedence = Affix::infix(p).unwrap().2;
+        //> test expr full_range
+        for op in [T![..=], T![..]] {
+            if p.at(op) {
+                // SAFETY: this in infallible, because it's always defined
+                let precedence = Affix::infix(p).unwrap().2;
 
-                    m = p.start();
-                    p.bump(op);
+                m = p.start();
+                p.bump(op);
 
-                    if p.at_ts(LHS_FIRST) {
-                        expr_bp(p, None, r, precedence.lower());
-                    }
-
-                    let cm = m.complete(p, SyntaxKind::RangeExpr);
-                    return Some((cm, BlockLike::NotBlock));
+                if p.at_ts(LHS_FIRST) {
+                    expr_bp(p, None, r, precedence.lower());
                 }
-            }
 
-            let (lhs, block_like) = atom::atom_expr(p, r)?;
-            let (cm, block_like) = postfix_expr(p, lhs, block_like, !block_like.is_block());
-            return Some((cm, block_like));
+                let cm = m.complete(p, SyntaxKind::RangeExpr);
+                return Some((cm, BlockLike::NotBlock));
+            }
         }
+
+        let (lhs, block_like) = atom::atom_expr(p, r)?;
+        let (cm, block_like) = postfix_expr(p, lhs, block_like, !block_like.is_block());
+
+        Some((cm, block_like))
     }
 }
 
@@ -120,20 +101,17 @@ pub(super) fn expr_bp(
         m
     });
 
-    let mut lhs = match lhs(p, r) {
-        Some((lhs, block_like)) => {
-            let lhs = lhs.extend_to(p, m);
+    let mut lhs = if let Some((lhs, block_like)) = lhs(p, r) {
+        let lhs = lhs.extend_to(p, m);
 
-            if block_like.is_block() {
-                return Some((lhs, BlockLike::Block));
-            }
+        if block_like.is_block() {
+            return Some((lhs, BlockLike::Block));
+        }
 
-            lhs
-        }
-        None => {
-            m.abandon(p);
-            return None;
-        }
+        lhs
+    } else {
+        m.abandon(p);
+        return None;
     };
 
     loop {

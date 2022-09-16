@@ -26,13 +26,13 @@ pub(crate) mod entry {
         use super::*;
 
         pub(crate) fn ty(p: &mut Parser<'_>) {
-            types::type_(p);
+            // types::type_(p);
         }
         pub(crate) fn expr(p: &mut Parser<'_>) {
             let _ = expressions::expr(p);
         }
         pub(crate) fn path(p: &mut Parser<'_>) {
-            let _ = paths::type_path(p);
+            paths::path(p);
         }
         pub(crate) fn item(p: &mut Parser<'_>) {
             items::item(p);
@@ -93,13 +93,13 @@ fn name_ref(p: &mut Parser) {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum BlockLike {
+pub(crate) enum BlockLike {
     Block,
     NotBlock,
 }
 
 impl BlockLike {
     fn is_block(self) -> bool {
-        self == BlockLike::Block
+        self == Self::Block
     }
 }

@@ -41,7 +41,7 @@ impl SyntaxTreeBuilder {
         let green = self.inner.finish();
         let errors = self.errors.into_iter().fold(None, |acc, value| match acc {
             None => Some(value),
-            Some(other) => {
+            Some(mut other) => {
                 other.extend_one(value);
 
                 Some(other)

@@ -9,20 +9,20 @@ use crate::SyntaxKind;
 pub(crate) struct TokenSet(u128);
 
 impl TokenSet {
-    pub(crate) const EMPTY: TokenSet = TokenSet(0);
+    pub(crate) const EMPTY: Self = Self(0);
 
-    pub(crate) const fn new(kinds: &[SyntaxKind]) -> TokenSet {
+    pub(crate) const fn new(kinds: &[SyntaxKind]) -> Self {
         let mut res = 0u128;
         let mut i = 0;
         while i < kinds.len() {
             res |= mask(kinds[i]);
             i += 1;
         }
-        TokenSet(res)
+        Self(res)
     }
 
-    pub(crate) const fn union(self, other: TokenSet) -> TokenSet {
-        TokenSet(self.0 | other.0)
+    pub(crate) const fn union(self, other: Self) -> Self {
+        Self(self.0 | other.0)
     }
 
     pub(crate) const fn contains(&self, kind: SyntaxKind) -> bool {

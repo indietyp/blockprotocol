@@ -23,7 +23,7 @@ impl std::error::Error for ParserError {}
 pub struct Note(String);
 
 impl Note {
-    pub fn new(note: impl Into<String>) -> Self {
+    pub(crate) fn new(note: impl Into<String>) -> Self {
         Self(note.into())
     }
 }
@@ -36,7 +36,7 @@ pub struct Label {
 }
 
 impl Label {
-    pub fn new(message: impl Into<String>, span: Either<usize, TextRange>) -> Self {
+    pub(crate) fn new(message: impl Into<String>, span: Either<usize, TextRange>) -> Self {
         Self {
             message: message.into(),
             span,
@@ -50,6 +50,7 @@ pub enum Expected {
     Name,
     Ident,
     String,
+    Expr,
 }
 
 impl Display for Expected {
@@ -59,6 +60,7 @@ impl Display for Expected {
             Self::Name => f.write_str("name"),
             Self::Ident => f.write_str("identifier"),
             Self::String => f.write_str("string"),
+            Self::Expr => f.write_str("expression"),
         }
     }
 }
@@ -83,7 +85,7 @@ impl std::error::Error for ExpectedError {
 }
 
 impl ExpectedError {
-    pub(crate) fn new(pos: usize, kind: Expected) -> Self {
+    pub(crate) const fn new(pos: usize, kind: Expected) -> Self {
         Self { pos, kind }
     }
 
@@ -112,7 +114,7 @@ impl std::error::Error for UnmatchedError {
 }
 
 impl UnmatchedError {
-    pub(crate) fn new(pos: usize, closing: SyntaxKind) -> Self {
+    pub(crate) const fn new(pos: usize, closing: SyntaxKind) -> Self {
         Self { pos, closing }
     }
 

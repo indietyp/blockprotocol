@@ -1,5 +1,8 @@
 use crate::{
-    grammar::{expressions::expr, paths},
+    grammar::{
+        expressions::{expr, Restrictions},
+        paths, BlockLike,
+    },
     marker::CompletedMarker,
     parser::Parser,
     token_set::TokenSet,
@@ -156,3 +159,6 @@ fn array_expr(p: &mut Parser<'_>) -> CompletedMarker {
 // TODO: postfix-expr
 // TODO: map-expr
 // TODO: reference-ref, name, name-ref
+pub(crate) fn atom_expr(p: &mut Parser, r: Restrictions) -> Option<(CompletedMarker, BlockLike)> {
+    todo!()
+}

@@ -77,7 +77,7 @@ struct Converter<'a> {
 }
 
 impl<'a> Converter<'a> {
-    fn new(text: &'a str) -> Self {
+    const fn new(text: &'a str) -> Self {
         Self {
             res: LexedStr {
                 text,
@@ -91,6 +91,10 @@ impl<'a> Converter<'a> {
         self.res.push(Token::new(
             SyntaxKind::EndOfFile,
             "",
+            #[expect(
+                clippy::cast_possible_truncation,
+                reason = "lexer cannot parse more than u32"
+            )]
             TextRange::new(
                 TextSize::from(self.offset as u32),
                 TextSize::from(self.offset as u32),
