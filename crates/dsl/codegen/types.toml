@@ -267,3 +267,54 @@ contextual = "alias"
 contextual = "use"
 [syntax.set-kw]
 contextual = "set"
+
+# Precedence table
+[[precedence]]
+infix-left = ["="]
+
+[[precedence]]
+infix-left = ["..=", ".."]
+
+# Combinators
+[[precedence]]
+infix-left = ["||"]
+
+[[precedence]]
+infix-left = ["&&"]
+
+[[precedence]]
+prefix = ["!"]
+
+# Comparisons
+[[precedence]]
+infix-left = ["==", "<=", ">=", "<", ">"]
+
+# Binary Operations
+[[precedence]]
+infix-left = [">>", "<<"]
+
+[[precedence]]
+infix-left = ["^"]
+
+[[precedence]]
+infix-left = ["&"]
+
+[[precedence]]
+infix-left = ["|"]
+
+# Arithmatic Operations
+[[precedence]]
+infix-left = ["+", "-"]
+
+[[precedence]]
+infix-left = ["*", "/", "%"]
+
+[[precedence]]
+infix-right = ["**"]
+
+[[precedence]]
+prefix = ["+", "-"]
+
+# (for now unused)
+[[precedence]]
+postfix = ["?"]

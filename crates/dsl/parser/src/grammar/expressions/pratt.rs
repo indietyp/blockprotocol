@@ -60,47 +60,6 @@ pub(crate) enum Affix {
     Infix(SyntaxKind, Precedence, Associativity),
 }
 
-/// Convenience macro, which automatically determines the ladder needed for all different types
-/// The syntax is: L/R/P/N:T![..] or T![..]:P
-/// where
-/// * L: Left Associative Infix,
-/// * R: Right Associative Infix
-/// * N: Neither Associative Infix
-/// * P: Prefix
-///
-/// or in the second example:
-/// * P: Postfix
-macro_rules! define {
-    () => {};
-}
-
-define! {
-    [N:T![=]],
-    [L:T![..=], L:T![..]],
-
-    // combinators
-    [L:T![||]],
-    [L:T![&&]],
-    [P:T![!]],
-
-    // comparison
-    [L:T![==], L:T![<=], L:T![>=], L:T![<], L:T![>]],
-
-    // binary operations
-    [L:T![>>], L:T![<<]],
-    [L:T![^]],
-    [L:T![&]],
-    [L:T![|]],
-
-    // arithmatic
-    [L:T![+], L:T![-]],
-    [L:T![*], L:T![/], L:T![%]],
-    [T:T![**]],
-
-    [P:T![+], P:T![-]],
-    [T![?]:P]
-}
-
 //         <lbp>  <rbp>  <nbp> <kind>
 // Nilfix:  MIN |  MIN |  MAX | nud
 // Prefix:  MIN |   bp |  MAX | nud
