@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 873E90676E35FB8B9E928F01E3F8E6713D0D0553BE05DED9653B900952AA6533
+//! GENERATED WITH AF6F82FDCC6DD6B3967505D4B94EEDBBE90E720458B57250AFBDF705FB358AC3
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -45,10 +45,8 @@ pub enum SyntaxKind {
     PropItem,
     LinkItem,
     EntityItem,
-    LetItem,
     UseItem,
     SetItem,
-    ImportItem,
     AliasItem,
     AliasDataItem,
     AliasPropItem,
@@ -99,7 +97,6 @@ pub enum SyntaxKind {
     AliasKw,
     UseKw,
     SetKw,
-    ImportKw,
     EndOfFile,
     Error,
     Tombstone,
@@ -166,7 +163,6 @@ impl SyntaxKind {
             "alias" => Self::AliasKw,
             "use" => Self::UseKw,
             "set" => Self::SetKw,
-            "import" => Self::ImportKw,
             _ => return None,
         };
         Some(kw)

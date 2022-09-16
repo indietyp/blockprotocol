@@ -1,6 +1,7 @@
 use crate::{
     error::{Expected, ExpectedError, UnmatchedError},
-    grammar::{expressions::atom::literal_string, name, name_ref},
+    grammar::{expressions::atom::literal_string, name, name_ref, paths::path},
+    marker::Marker,
     parser::Parser,
     token_set::TokenSet,
     SyntaxKind,
@@ -22,12 +23,12 @@ pub(super) fn item(p: &mut Parser) {
     todo!()
 }
 
-/// `prop` structurally can be described as:
+/// `prop` item
 ///
 /// ```text
 /// prop [id] "string": type (allowed ones) [= default] [;]
 /// ```
-fn prop(p: &mut Parser) {
+fn prop(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::DataKw));
     p.bump(SyntaxKind::Ident);
 
@@ -51,14 +52,15 @@ fn prop(p: &mut Parser) {
     }
 
     p.eat(T![;]);
+    m.complete(p, SyntaxKind::PropItem);
 }
 
-/// `entity` structurally can be described as:
+/// `entity` item
 ///
 /// ```text
 /// entity [id] "string": type (record w/ links) [= default] [;]
 /// ```
-fn entity(p: &mut Parser) {
+fn entity(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::EntityKw));
     p.bump(SyntaxKind::Ident);
 
@@ -82,16 +84,17 @@ fn entity(p: &mut Parser) {
     }
 
     p.eat(T![;]);
+    m.complete(p, SyntaxKind::EntityItem);
 }
 
-/// `data` structurally can be described as:
+/// `data` item
 ///
 /// ```text
 /// data [id] "string": type (tbd) [;]
 /// ```
 ///
 /// TODO: insert id once it has been run once and an id as been assigned
-fn data(p: &mut Parser) {
+fn data(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::DataKw));
     p.bump(SyntaxKind::Ident);
 
@@ -111,14 +114,15 @@ fn data(p: &mut Parser) {
     // TODO: type
 
     p.eat(T![;]);
+    m.complete(p, SyntaxKind::DataItem);
 }
 
-/// `link` structurally can be described as:
+/// `link` item
 ///
 /// ```text
 /// link [id] "string" [;]
 /// ```
-fn link(p: &mut Parser) {
+fn link(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::LinkKw));
     p.bump(SyntaxKind::Ident);
 
@@ -134,6 +138,40 @@ fn link(p: &mut Parser) {
     }
 
     p.eat(T![;]);
+    m.complete(p, SyntaxKind::LinkItem);
+}
+
+/// `use` item
+///
+/// ```text
+/// use path [;]
+/// ```
+fn use_(p: &mut Parser, m: Marker) {
+    assert!(p.at_contextual_kw(SyntaxKind::UseKw));
+    p.bump(SyntaxKind::Ident);
+
+    path(p);
+
+    p.eat(T![;]);
+    m.complete(p, SyntaxKind::UseItem);
+}
+
+/// `set` item
+///
+/// ```set
+/// set path = expr [;]
+/// ```
+fn set(p: &mut Parser, m: Marker) {
+    assert!(p.at_contextual_kw(SyntaxKind::SetKw));
+    p.bump(SyntaxKind::Ident);
+
+    path(p);
+
+    p.expect(SyntaxKind::Equals);
+
+    // TODO: expression
+
+    m.complete(p, SyntaxKind::SetItem);
 }
 
 pub(crate) fn token_tree(p: &mut Parser<'_>) {
