@@ -21,10 +21,7 @@ pub(super) const ATOM_EXPR_FIRST: TokenSet = LITERAL_FIRST
     .union(TokenSet::new(&[T!['('], T!['{'], T!['[']]));
 
 pub(crate) fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
-    if p.nth_at(0, SyntaxKind::Ident)
-        && p.nth_at(1, SyntaxKind::String)
-        && p.nth_at(2, SyntaxKind::Ident)
-    {
+    if p.at_composite3(0, SyntaxKind::Ident, SyntaxKind::String, SyntaxKind::Ident) {
         // a"example"b
         let m = p.start();
 
@@ -39,7 +36,7 @@ pub(crate) fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
         suffix.complete(p, SyntaxKind::LiteralStringSuffix);
 
         Some(m.complete(p, SyntaxKind::LiteralString))
-    } else if p.nth_at(0, SyntaxKind::Ident) && p.nth_at(1, SyntaxKind::String) {
+    } else if p.at_composite2(0, SyntaxKind::Ident, SyntaxKind::String) {
         // a"example"
         let m = p.start();
 
@@ -50,7 +47,7 @@ pub(crate) fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
         p.bump(SyntaxKind::String);
 
         Some(m.complete(p, SyntaxKind::LiteralString))
-    } else if p.nth_at(0, SyntaxKind::String) && p.nth_at(1, SyntaxKind::Ident) {
+    } else if p.at_composite2(0, SyntaxKind::String, SyntaxKind::Ident) {
         // "example"b
 
         let m = p.start();
