@@ -1,9 +1,6 @@
 use crate::{
     error::{Expected, ExpectedError, UnmatchedError},
-    grammar::{
-        expressions::atom::{literal, literal_string},
-        name, name_ref,
-    },
+    grammar::{expressions::atom::literal_string, name, name_ref},
     parser::Parser,
     token_set::TokenSet,
     SyntaxKind,

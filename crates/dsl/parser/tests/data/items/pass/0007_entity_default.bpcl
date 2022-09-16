@@ -1,0 +1,3 @@
+entity "Example": {
+    age/1 = 12
+};
