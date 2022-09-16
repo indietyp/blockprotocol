@@ -60,49 +60,45 @@ pub(crate) enum Affix {
     Infix(SyntaxKind, Precedence, Associativity),
 }
 
+/// Convenience macro, which automatically determines the ladder needed for all different types
+/// The syntax is: L/R/P/N:T![..] or T![..]:P
+/// where
+/// * L: Left Associative Infix,
+/// * R: Right Associative Infix
+/// * N: Neither Associative Infix
+/// * P: Prefix
+///
+/// or in the second example:
+/// * P: Postfix
 macro_rules! define {
     () => {};
 }
 
 define! {
-    infix = [
-        L:T![..=]:3,
-        L:T![..]:3,
+    [N:T![=]],
+    [L:T![..=], L:T![..]],
 
-        L:T![>>]:9,
-        L:T![<<]:9,
+    // combinators
+    [L:T![||]],
+    [L:T![&&]],
+    [P:T![!]],
 
-        L:T![||]:5,
-        L:T![&&]:5,
+    // comparison
+    [L:T![==], L:T![<=], L:T![>=], L:T![<], L:T![>]],
 
-        L:T![==]:7,
-        L:T![<=]:7,
-        L:T![>=]:7,
-        L:T![>]:7,
-        L:T![<]:7,
+    // binary operations
+    [L:T![>>], L:T![<<]],
+    [L:T![^]],
+    [L:T![&]],
+    [L:T![|]],
 
-        L:T![^]:9,
-        L:T![&]:11,
-        L:T![|]:13,
+    // arithmatic
+    [L:T![+], L:T![-]],
+    [L:T![*], L:T![/], L:T![%]],
+    [T:T![**]],
 
-        R:T![**]:19
-
-        L:T![+]:15,
-        L:T![-]:15,
-        L:T![*]:17,
-        L:T![/]:17,
-        L:T![%]:17,
-
-        N:T![=]:1
-    ],
-    prefix = [
-        *:T![!]:5,
-        *:T![+]:21,
-        *:T![-]:21,
-    ],
-    postfix = [
-
-    ]
+    [P:T![+], P:T![-]],
+    [T![?]:P]
 }
 
 //         <lbp>  <rbp>  <nbp> <kind>
