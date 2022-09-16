@@ -221,6 +221,7 @@ is = ['trivia']
 [syntax.postfix-expr]
 [syntax.tuple-expr]
 [syntax.range-expr]
+[syntax.block-expr]
 
 # TODO: use `:` for types instead of the stmt level
 [syntax.union-type]
