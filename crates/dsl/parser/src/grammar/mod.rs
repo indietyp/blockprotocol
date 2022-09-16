@@ -89,3 +89,15 @@ fn name_ref(p: &mut Parser) {
         p.err_and_bump(ExpectedError::report(p.position(), Expected::Ident));
     }
 }
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum BlockLike {
+    Block,
+    NotBlock,
+}
+
+impl BlockLike {
+    fn is_block(self) -> bool {
+        self == BlockLike::Block
+    }
+}

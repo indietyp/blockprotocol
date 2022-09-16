@@ -1,4 +1,6 @@
-use crate::{marker::CompletedMarker, parser::Parser, token_set::TokenSet, SyntaxKind};
+use crate::{
+    grammar::paths, marker::CompletedMarker, parser::Parser, token_set::TokenSet, SyntaxKind,
+};
 
 pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     T![true],
@@ -8,6 +10,11 @@ pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     SyntaxKind::Integer,
     SyntaxKind::String,
 ]);
+
+// E.g. for after the break in `if break {}`, this should not match
+pub(super) const ATOM_EXPR_FIRST: TokenSet = LITERAL_FIRST
+    .union(paths::PATH_FIRST)
+    .union(TokenSet::new(&[T!['('], T!['{'], T!['[']]));
 
 pub(crate) fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
     if p.nth_at(0, SyntaxKind::Ident)

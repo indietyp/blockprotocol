@@ -27,8 +27,8 @@ static PARSER_STEP_LIMIT: Limit = Limit::new(15_000_000);
 /// "start expression, consume number literal,
 /// finish expression". See `Event` docs for more.
 pub(crate) struct Parser<'t> {
-    inp: &'t Input,
-    pos: usize,
+    pub(crate) inp: &'t Input,
+    pub(crate) pos: usize,
     pub(crate) events: Vec<Event>,
     steps: Cell<u32>,
 }
@@ -78,64 +78,29 @@ impl<'t> Parser<'t> {
         self.nth_at(0, kind)
     }
 
-    pub(crate) fn nth_at(&self, n: usize, kind: SyntaxKind) -> bool {
-        match kind {
-            T![||] => self.at_composite2(n, T![|], T![|]),
-            T![&&] => self.at_composite2(n, T![&], T![&]),
-
-            T![>>] => self.at_composite2(n, T![>], T![>]),
-            T![<<] => self.at_composite2(n, T![<], T![<]),
-
-            T![==] => self.at_composite2(n, T![=], T![=]),
-            T![**] => self.at_composite2(n, T![*], T![*]),
-
-            T![::] => self.at_composite2(n, T![:], T![:]),
-
-            T![->] => self.at_composite2(n, T![-], T![>]),
-            T![~>] => self.at_composite2(n, T![~], T![>]),
-
-            T![<-] => self.at_composite2(n, T![<], T![-]),
-            T![<~] => self.at_composite2(n, T![<], T![~]),
-
-            T![..] => self.at_composite2(n, T![.], T![.]),
-            T![..=] => self.at_composite3(n, T![.], T![.], T![=]),
-
-            _ => self.inp.kind(self.pos + n) == kind,
-        }
-    }
-
     // Consume the next token if `kind` matches.
     pub(crate) fn eat(&mut self, kind: SyntaxKind) -> bool {
         if !self.at(kind) {
             return false;
         }
-        let n_raw_tokens = match kind {
-            T![::]
-            | T![..]
-            | T![->]
-            | T![~>]
-            | T![<-]
-            | T![<~]
-            | T![||]
-            | T![>>]
-            | T![<<]
-            | T![==]
-            | T![**]
-            | T![&&] => 2,
-            T![..=] => 3,
-            _ => 1,
-        };
+        let n_raw_tokens = kind.n_raw_tokens();
         self.do_bump(kind, n_raw_tokens);
         true
     }
 
-    fn at_composite2(&self, n: usize, k1: SyntaxKind, k2: SyntaxKind) -> bool {
+    pub(crate) fn at_composite2(&self, n: usize, k1: SyntaxKind, k2: SyntaxKind) -> bool {
         self.inp.kind(self.pos + n) == k1
             && self.inp.kind(self.pos + n + 1) == k2
             && self.inp.is_joint(self.pos + n)
     }
 
-    fn at_composite3(&self, n: usize, k1: SyntaxKind, k2: SyntaxKind, k3: SyntaxKind) -> bool {
+    pub(crate) fn at_composite3(
+        &self,
+        n: usize,
+        k1: SyntaxKind,
+        k2: SyntaxKind,
+        k3: SyntaxKind,
+    ) -> bool {
         self.inp.kind(self.pos + n) == k1
             && self.inp.kind(self.pos + n + 1) == k2
             && self.inp.kind(self.pos + n + 2) == k3

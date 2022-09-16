@@ -209,30 +209,49 @@ is = ['trivia']
 # These are compound syntax kinds, which are supposed to be joined together
 [syntax.colon2]
 shortcut = "::"
+composite = [':', ':']
 [syntax.pipe2]
 shortcut = "||"
-[syntax.greater-than2]
+composite = ['|', '|']
+[syntax.gt2]
 shortcut = ">>"
-[syntax.less-than2]
+composite = ['>', '>']
+[syntax.gt-eq]
+shortcut = ">="
+composite = ['>', '=']
+[syntax.lt2]
 shortcut = "<<"
+composite = ['<', '<']
+[syntax.lt-eq]
+shortcut = "<="
+composite = ['<', '=']
 [syntax.eq2]
 shortcut = "=="
+composite = ['=', '=']
 [syntax.star2]
 shortcut = "**"
+composite = ['*', '*']
 [syntax.ampersand2]
 shortcut = "&&"
+composite = ['&', '&']
 [syntax.dot2]
 shortcut = ".."
+composite = ['.', '.']
 [syntax.dot2-eq]
 shortcut = "..="
-[syntax.minus-greater-than]
+composite = ['.', '.', '=']
+[syntax.minus-gt]
 shortcut = "->"
-[syntax.tilde-greater-than]
+composite = ['-', '>']
+[syntax.tilde-gt]
 shortcut = "~>"
-[syntax.less-than-minus]
+composite = ['~', '>']
+[syntax.lt-minus]
 shortcut = "<-"
-[syntax.less-than-tilde]
+composite = ['<', '-']
+[syntax.lt-tilde]
 shortcut = "<~"
+composite = ['<', '~']
 
 [syntax.data-kw]
 contextual = "data"

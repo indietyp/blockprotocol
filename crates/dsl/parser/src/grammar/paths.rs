@@ -1,11 +1,14 @@
 //! This is simplified from the original implementation as we do not support any sort of generics
 
 use crate::{
-    error::ExpectedIdentifierError,
+    error::{Expected, ExpectedError},
     grammar::{items, name_ref},
     parser::Parser,
+    token_set::TokenSet,
     SyntaxKind,
 };
+
+pub(super) const PATH_FIRST: TokenSet = TokenSet::new(&[SyntaxKind::Ident, T![:]]);
 
 pub(crate) fn path(p: &mut Parser) {
     let m = p.start();
@@ -46,7 +49,7 @@ fn path_segment(p: &mut Parser, first: bool) {
         // note(bmahmoud): for now we do not have any reserved words that we need to take care of
         _ => {
             p.err_recover(
-                ExpectedIdentifierError::report(p.position()),
+                ExpectedError::report(p.position(), Expected::Ident),
                 items::ITEM_RECOVERY_SET,
             );
 

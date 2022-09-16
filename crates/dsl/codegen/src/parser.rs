@@ -45,6 +45,82 @@ impl Display for GenerationError {
 
 impl std::error::Error for GenerationError {}
 
+fn shortcuts(config: &Config) -> impl Iterator<Item = quote::__private::TokenStream> + '_ {
+    config
+        .kind
+        .iter()
+        .map(|(key, value)| (key, value.shortcut.as_ref().or(value.token.as_ref())))
+        .chain(
+            config
+                .syntax
+                .iter()
+                .map(|(key, value)| (key, value.shortcut.as_ref())),
+        )
+        .filter_map(|(key, token)| {
+            token.map(|token| {
+                let key = format_ident!("{}", camel_case_to_pascal_case(key));
+
+                let tree = syn::parse_str::<syn::__private::TokenStream2>(token).unwrap();
+
+                quote!([#tree] => {$crate :: SyntaxKind :: #key})
+            })
+        })
+}
+
+fn composite(config: &Config) -> quote::__private::TokenStream {
+    let composite = config
+        .syntax
+        .iter()
+        .filter_map(|(key, value)| value.composite.as_ref().map(|composite| (key, composite)));
+
+    let nth_at = composite.clone().map(|(key, composite)| {
+        let ident = format_ident!("{}", camel_case_to_pascal_case(key));
+        match &composite[..] {
+            [a, b] => {
+                let a = syn::parse_str::<syn::__private::TokenStream2>(a).unwrap();
+                let b = syn::parse_str::<syn::__private::TokenStream2>(b).unwrap();
+
+                quote!(SyntaxKind::#ident => self.at_composite2(n, T![#a], T![#b]))
+            }
+            [a, b, c] => {
+                let a = syn::parse_str::<syn::__private::TokenStream2>(a).unwrap();
+                let b = syn::parse_str::<syn::__private::TokenStream2>(b).unwrap();
+                let c = syn::parse_str::<syn::__private::TokenStream2>(c).unwrap();
+
+                quote!(SyntaxKind::#ident => self.at_composite3(n, T![#a], T![#b], T![#c]))
+            }
+            _ => panic!("can only composite from 2 or 3"),
+        }
+    });
+
+    let n_raw_tokens = composite.map(|(key, composite)| {
+        let ident = format_ident!("{}", camel_case_to_pascal_case(key));
+        let len = composite.len() as u8;
+
+        quote!(SyntaxKind::#ident => #len)
+    });
+
+    quote! {
+        impl SyntaxKind {
+            pub(crate) fn n_raw_tokens(&self) -> u8 {
+                match self {
+                    #(#n_raw_tokens,)*
+                    _ => 1
+                }
+            }
+        }
+
+        impl Parser<'_> {
+            pub(crate) fn nth_at(&self, n: usize, kind: SyntaxKind) -> bool {
+                match kind {
+                    #(#nth_at,)*
+                    _ => self.inp.kind(self.pos + n) == kind
+                }
+            }
+        }
+    }
+}
+
 pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     if check().change_context(GenerationError::Check)? {
         return Ok(());
@@ -55,6 +131,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
 
         use lexer::Kind;
         use num_derive::{FromPrimitive, ToPrimitive};
+
+        use crate::parser::Parser;
     };
 
     let kinds = config
@@ -77,25 +155,7 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
 
     let trivia = find_is(config, &Is::Trivia);
 
-    let shortcuts = config
-        .kind
-        .iter()
-        .map(|(key, value)| (key, value.shortcut.as_ref().or(value.token.as_ref())))
-        .chain(
-            config
-                .syntax
-                .iter()
-                .map(|(key, value)| (key, value.shortcut.as_ref())),
-        )
-        .filter_map(|(key, token)| {
-            token.map(|token| {
-                let key = format_ident!("{}", camel_case_to_pascal_case(key));
-
-                let tree = syn::parse_str::<syn::__private::TokenStream2>(token).unwrap();
-
-                quote!([#tree] => {$crate :: SyntaxKind :: #key})
-            })
-        });
+    let shortcuts = shortcuts(config);
 
     let contextual = config.syntax.iter().filter_map(|(key, value)| {
         value.contextual.as_ref().map(|ident| {
@@ -103,6 +163,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
             quote!(#ident => Self::#key)
         })
     });
+
+    let composite = composite(config);
 
     let type_ = quote! {
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
@@ -146,6 +208,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         macro_rules! T {
             #(#shortcuts;)*
         }
+
+        #composite
     };
 
     let stream = quote! {

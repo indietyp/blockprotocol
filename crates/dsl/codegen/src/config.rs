@@ -52,6 +52,7 @@ pub(crate) struct Kind {
 pub(crate) struct Syntax {
     pub(crate) shortcut: Option<String>,
     pub(crate) contextual: Option<String>,
+    pub(crate) composite: Option<Vec<String>>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]

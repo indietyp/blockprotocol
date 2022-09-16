@@ -6,8 +6,16 @@
 //!
 //! Our precedence values are multiplied by 10 to make sure we're able to modify and add new ones
 //! easily.
+//!
+//! TODO: implement the other one D:
 
-use crate::parser::Parser;
+use crate::{
+    grammar::{attributes, expressions::atom, BlockLike},
+    marker::{CompletedMarker, Marker},
+    parser::Parser,
+    token_set::TokenSet,
+    SyntaxKind,
+};
 
 #[derive(PartialEq, PartialOrd, Copy, Clone)]
 pub(crate) struct Precedence(pub u32);
@@ -46,10 +54,55 @@ pub(crate) enum Associativity {
 
 #[derive(Copy, Clone)]
 pub(crate) enum Affix {
-    Nilfix,
-    Prefix(Precedence),
-    Postfix(Precedence),
-    Infix(Precedence, Associativity),
+    None,
+    Prefix(SyntaxKind, Precedence),
+    Postfix(SyntaxKind, Precedence),
+    Infix(SyntaxKind, Precedence, Associativity),
+}
+
+macro_rules! define {
+    () => {};
+}
+
+define! {
+    infix = [
+        L:T![..=]:3,
+        L:T![..]:3,
+
+        L:T![>>]:9,
+        L:T![<<]:9,
+
+        L:T![||]:5,
+        L:T![&&]:5,
+
+        L:T![==]:7,
+        L:T![<=]:7,
+        L:T![>=]:7,
+        L:T![>]:7,
+        L:T![<]:7,
+
+        L:T![^]:9,
+        L:T![&]:11,
+        L:T![|]:13,
+
+        R:T![**]:19
+
+        L:T![+]:15,
+        L:T![-]:15,
+        L:T![*]:17,
+        L:T![/]:17,
+        L:T![%]:17,
+
+        N:T![=]:1
+    ],
+    prefix = [
+        *:T![!]:5,
+        *:T![+]:21,
+        *:T![-]:21,
+    ],
+    postfix = [
+
+    ]
 }
 
 //         <lbp>  <rbp>  <nbp> <kind>
@@ -60,70 +113,91 @@ pub(crate) enum Affix {
 // InfixR:   bp | bp-1 | bp+1 | led
 // InfixN:   bp |   bp |   bp | led
 impl Affix {
-    fn left_binding_power(self) -> Precedence {
-        match self {
-            Affix::Nilfix => Precedence::min(),
-            Affix::Prefix(_) => Precedence::min(),
-            Affix::Postfix(bp) => bp.normalize(),
-            Affix::Infix(bp, _) => bp.normalize(),
-        }
-    }
-
-    fn right_binding_power(self) -> Precedence {
-        match self {
-            Affix::Nilfix => Precedence::min(),
-            Affix::Prefix(bp) => bp.normalize(),
-            Affix::Postfix(_) => Precedence::min(),
-            Affix::Infix(bp, Associativity::Right) => bp.lower(),
-            Affix::Infix(bp, _) => bp,
-        }
-    }
-
-    fn next_binding_power(self) -> Precedence {
-        match self {
-            Affix::Nilfix => Precedence::max(),
-            Affix::Prefix(_) => Precedence::max(),
-            Affix::Postfix(_) => Precedence::max(),
-            Affix::Infix(bp, Associativity::Left | Associativity::Right) => bp.raise(),
-            Affix::Infix(bp, _) => bp,
-        }
-    }
-
-    fn get(p: &mut Parser) -> Affix {
+    fn fetch(p: &mut Parser) -> Affix {
+        // TODO: use the other approach outlined, this one is flawed D:
         match p.current() {
-            T![.] if p.at(T![..=]) => Affix::Infix(Precedence(20), Associativity::Left),
-            T![.] if p.at(T![..]) => Affix::Infix(Precedence(20), Associativity::Left),
+            T![.] if p.at(T![..=]) => Affix::Infix(T![..=], Precedence(20), Associativity::Left),
+            T![.] if p.at(T![..]) => Affix::Infix(T![..], Precedence(20), Associativity::Left),
 
-            T![|] if p.at(T![||]) => Affix::Infix(Precedence(30), Associativity::Left),
-            T![|] => Affix::Infix(Precedence(60), Associativity::Left),
+            T![|] if p.at(T![||]) => Affix::Infix(T![||], Precedence(30), Associativity::Left),
+            T![|] => Affix::Infix(T![|], Precedence(60), Associativity::Left),
 
-            T![^] => Affix::Infix(Precedence(70), Associativity::Left),
+            T![^] => Affix::Infix(T![^], Precedence(70), Associativity::Left),
 
-            T![&] if p.at(T![&&]) => Affix::Infix(Precedence(40), Associativity::Left),
-            T![&] => Affix::Infix(Precedence(80), Associativity::Left),
+            T![&] if p.at(T![&&]) => Affix::Infix(T![&&], Precedence(40), Associativity::Left),
+            T![&] => Affix::Infix(T![&], Precedence(80), Associativity::Left),
 
-            T![!] => Affix::Prefix(Precedence(45)),
+            T![!] => Affix::Prefix(T![!], Precedence(45)),
 
-            T![=] if p.at(T![==]) => Affix::Infix(Precedence(50), Associativity::Left),
-            T![=] => Affix::Infix(Precedence(10), Associativity::Neither),
+            T![=] if p.at(T![==]) => Affix::Infix(T![==], Precedence(50), Associativity::Left),
+            T![=] => Affix::Infix(T![=], Precedence(10), Associativity::Neither),
 
-            T![>] if p.at(T![>>]) => Affix::Infix(Precedence(90), Associativity::Left),
-            T![>] => Affix::Infix(Precedence(50), Associativity::Left),
+            T![>] if p.at(T![>>]) => Affix::Infix(T![>>], Precedence(90), Associativity::Left),
+            T![>] => Affix::Infix(T![>], Precedence(50), Associativity::Left),
 
-            T![<] if p.at(T![<<]) => Affix::Infix(Precedence(9), Associativity::Left),
-            T![<] => Affix::Infix(Precedence(50), Associativity::Left),
+            T![<] if p.at(T![<<]) => Affix::Infix(T![<<], Precedence(9), Associativity::Left),
+            T![<] => Affix::Infix(T![<], Precedence(50), Associativity::Left),
 
-            T![+] => Affix::Infix(Precedence(100), Associativity::Left),
-            T![-] => Affix::Infix(Precedence(100), Associativity::Left),
+            T![+] => Affix::Infix(T![+], Precedence(100), Associativity::Left),
+            // TODO: this can also be unary!
+            T![-] => Affix::Infix(T![-], Precedence(100), Associativity::Left),
 
-            T![%] => Affix::Infix(Precedence(110), Associativity::Left),
+            T![%] => Affix::Infix(T![%], Precedence(110), Associativity::Left),
 
-            T![*] if p.at(T![**]) => Affix::Infix(Precedence(120), Associativity::Right),
+            T![*] if p.at(T![**]) => Affix::Infix(T![*], Precedence(120), Associativity::Right),
 
-            T![*] => Affix::Infix(Precedence(110), Associativity::Left),
-            T![/] => Affix::Infix(Precedence(110), Associativity::Left),
+            T![*] => Affix::Infix(T![*], Precedence(110), Associativity::Left),
+            T![/] => Affix::Infix(T![/], Precedence(110), Associativity::Left),
 
-            _ => Affix::Nilfix,
+            _ => Affix::None,
         }
     }
+}
+
+const LHS_FIRST: TokenSet = atom::ATOM_EXPR_FIRST.union(TokenSet::new(&[T![!], T![.], T![-]]));
+
+fn lhs(p: &mut Parser) -> Option<(CompletedMarker, BlockLike)> {
+    match Affix::fetch(p) {
+        //> test expr unary
+        Affix::Prefix(kind, bp) => {
+            let m = p.start();
+            p.bump(kind);
+
+            expr_bp(p, None, bp);
+
+            let cm = m.complete(p, SyntaxKind::PrefixExpr);
+
+            Some((cm, BlockLike::NotBlock))
+        }
+        _ => {
+            let m;
+
+            //> test expr full_range
+            for op in [T![..=], T![..]] {
+                if p.at(op) {
+                    m = p.start();
+                    p.bump(op);
+                    if p.at_ts(LHS_FIRST) {
+                        // TODO
+                        expr_bp(p, None, Precedence(2));
+                    }
+                    let cm = m.complete(p, SyntaxKind::RangeExpr);
+                    return Some((cm, BlockLike::NotBlock));
+                }
+            }
+
+            let (lhs, blocklike) = atom::atom_expr(p, r)?;
+            let (cm, block_like) =
+                postfix_expr(p, lhs, blocklike, !(r.prefer_stmt && blocklike.is_block()));
+            return Some((cm, block_like));
+        }
+    }
+}
+
+fn expr_bp(p: &mut Parser, m: Option<Marker>, min_bp: Precedence) {
+    let m = m.unwrap_or_else(|| {
+        let m = p.start();
+        attributes::outer_attrs(p);
+        m
+    });
 }
