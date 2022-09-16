@@ -177,6 +177,12 @@ token = "move"
 
 [kind.async-kw]
 token = "async"
+
+[kind.yield-kw]
+token = "yield"
+
+[kind.const-kw]
+token = "const"
 #------------------------#
 
 [kind.whitespace]

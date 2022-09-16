@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 0C3B43AF67DCD09795F983F7D26808D9A03540B167A89AED49555285F8AA566E
+//! GENERATED WITH E8702DEC751F60B857A7BBBA26BE53139158DA0710F910920B78A3F09B36D223
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
@@ -105,6 +105,10 @@ pub enum Kind {
     MoveKw,
     #[token("async")]
     AsyncKw,
+    #[token("yield")]
+    YieldKw,
+    #[token("const")]
+    ConstKw,
     #[regex("\\s")]
     Whitespace,
     #[regex("//.*")]
