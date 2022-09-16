@@ -132,6 +132,9 @@ is = ['literal']
 token = "null"
 is = ['literal']
 
+[kind.do-kw]
+token = "do"
+
 #--------Reserved--------#
 [kind.let-kw]
 token = "let"

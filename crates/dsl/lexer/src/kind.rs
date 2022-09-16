@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH E8702DEC751F60B857A7BBBA26BE53139158DA0710F910920B78A3F09B36D223
+//! GENERATED WITH 7C812239C2A95B72F9E2B40DAA712C66A4D286019C4770713D0BBDF37182160E
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
@@ -75,6 +75,8 @@ pub enum Kind {
     FalseKw,
     #[token("null")]
     NullKw,
+    #[token("do")]
+    DoKw,
     #[token("let")]
     LetKw,
     #[token("fn")]
