@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH AF6F82FDCC6DD6B3967505D4B94EEDBBE90E720458B57250AFBDF705FB358AC3
+//! GENERATED WITH B6C2E8BB362605DAFFD174B8947D943F870ED91FCC4A666CB9B2990B2A523231
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -16,6 +16,8 @@ pub enum SyntaxKind {
     Plus,
     Minus,
     Star,
+    Percent,
+    Caret,
     Tilde,
     Slash,
     Pipe,
@@ -84,6 +86,12 @@ pub enum SyntaxKind {
     CallExpr,
     CallArgs,
     Colon2,
+    Pipe2,
+    GreaterThan2,
+    LessThan2,
+    Eq2,
+    Star2,
+    Ampersand2,
     Dot2,
     Dot2Eq,
     MinusGreaterThan,
@@ -114,6 +122,8 @@ impl From<Kind> for SyntaxKind {
             Kind::Plus => Self::Plus,
             Kind::Minus => Self::Minus,
             Kind::Star => Self::Star,
+            Kind::Percent => Self::Percent,
+            Kind::Caret => Self::Caret,
             Kind::Tilde => Self::Tilde,
             Kind::Slash => Self::Slash,
             Kind::Pipe => Self::Pipe,
@@ -168,4 +178,4 @@ impl SyntaxKind {
         Some(kw)
     }
 }
-macro_rules ! T { [:] => { $ crate :: SyntaxKind :: Colon } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [?] => { $ crate :: SyntaxKind :: QuestionMark } ; [!] => { $ crate :: SyntaxKind :: ExclamationMark } ; [=] => { $ crate :: SyntaxKind :: Equals } ; [>] => { $ crate :: SyntaxKind :: GreaterThan } ; [<] => { $ crate :: SyntaxKind :: LessThan } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [*] => { $ crate :: SyntaxKind :: Star } ; [~] => { $ crate :: SyntaxKind :: Tilde } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [|] => { $ crate :: SyntaxKind :: Pipe } ; [@] => { $ crate :: SyntaxKind :: At } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [&] => { $ crate :: SyntaxKind :: Ampersand } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [,] => { $ crate :: SyntaxKind :: Comma } ; ['}'] => { $ crate :: SyntaxKind :: LBrace } ; ['{'] => { $ crate :: SyntaxKind :: RBrace } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [true] => { $ crate :: SyntaxKind :: TrueKw } ; [false] => { $ crate :: SyntaxKind :: FalseKw } ; [null] => { $ crate :: SyntaxKind :: NullKw } ; [let] => { $ crate :: SyntaxKind :: LetKw } ; [fn] => { $ crate :: SyntaxKind :: FnKw } ; [::] => { $ crate :: SyntaxKind :: Colon2 } ; [..] => { $ crate :: SyntaxKind :: Dot2 } ; [..=] => { $ crate :: SyntaxKind :: Dot2Eq } ; [->] => { $ crate :: SyntaxKind :: MinusGreaterThan } ; [~>] => { $ crate :: SyntaxKind :: TildeGreaterThan } ; [<-] => { $ crate :: SyntaxKind :: LessThanMinus } ; [<~] => { $ crate :: SyntaxKind :: LessThanTilde } ; }
+macro_rules ! T { [:] => { $ crate :: SyntaxKind :: Colon } ; [.] => { $ crate :: SyntaxKind :: Dot } ; [?] => { $ crate :: SyntaxKind :: QuestionMark } ; [!] => { $ crate :: SyntaxKind :: ExclamationMark } ; [=] => { $ crate :: SyntaxKind :: Equals } ; [>] => { $ crate :: SyntaxKind :: GreaterThan } ; [<] => { $ crate :: SyntaxKind :: LessThan } ; [+] => { $ crate :: SyntaxKind :: Plus } ; [-] => { $ crate :: SyntaxKind :: Minus } ; [*] => { $ crate :: SyntaxKind :: Star } ; [%] => { $ crate :: SyntaxKind :: Percent } ; [^] => { $ crate :: SyntaxKind :: Caret } ; [~] => { $ crate :: SyntaxKind :: Tilde } ; [/] => { $ crate :: SyntaxKind :: Slash } ; [|] => { $ crate :: SyntaxKind :: Pipe } ; [@] => { $ crate :: SyntaxKind :: At } ; [#] => { $ crate :: SyntaxKind :: Hash } ; [&] => { $ crate :: SyntaxKind :: Ampersand } ; [;] => { $ crate :: SyntaxKind :: Semicolon } ; [,] => { $ crate :: SyntaxKind :: Comma } ; ['}'] => { $ crate :: SyntaxKind :: LBrace } ; ['{'] => { $ crate :: SyntaxKind :: RBrace } ; ['('] => { $ crate :: SyntaxKind :: LParen } ; [')'] => { $ crate :: SyntaxKind :: RParen } ; ['['] => { $ crate :: SyntaxKind :: LBracket } ; [']'] => { $ crate :: SyntaxKind :: RBracket } ; [true] => { $ crate :: SyntaxKind :: TrueKw } ; [false] => { $ crate :: SyntaxKind :: FalseKw } ; [null] => { $ crate :: SyntaxKind :: NullKw } ; [let] => { $ crate :: SyntaxKind :: LetKw } ; [fn] => { $ crate :: SyntaxKind :: FnKw } ; [::] => { $ crate :: SyntaxKind :: Colon2 } ; [||] => { $ crate :: SyntaxKind :: Pipe2 } ; [>>] => { $ crate :: SyntaxKind :: GreaterThan2 } ; [<<] => { $ crate :: SyntaxKind :: LessThan2 } ; [==] => { $ crate :: SyntaxKind :: Eq2 } ; [**] => { $ crate :: SyntaxKind :: Star2 } ; [&&] => { $ crate :: SyntaxKind :: Ampersand2 } ; [..] => { $ crate :: SyntaxKind :: Dot2 } ; [..=] => { $ crate :: SyntaxKind :: Dot2Eq } ; [->] => { $ crate :: SyntaxKind :: MinusGreaterThan } ; [~>] => { $ crate :: SyntaxKind :: TildeGreaterThan } ; [<-] => { $ crate :: SyntaxKind :: LessThanMinus } ; [<~] => { $ crate :: SyntaxKind :: LessThanTilde } ; }

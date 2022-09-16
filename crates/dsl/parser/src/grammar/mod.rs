@@ -33,7 +33,7 @@ pub(crate) mod entry {
             let _ = paths::type_path(p);
         }
         pub(crate) fn item(p: &mut Parser<'_>) {
-            items::item(p, true);
+            items::item(p);
         }
         // Parse a meta item , which excluded [], e.g : #[ MetaItem ]
         pub(crate) fn attribute(p: &mut Parser<'_>) {

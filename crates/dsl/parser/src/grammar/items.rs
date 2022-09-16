@@ -16,7 +16,6 @@ pub(super) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
     SyntaxKind::AliasKw,
     SyntaxKind::UseKw,
     SyntaxKind::SetKw,
-    SyntaxKind::ImportKw,
 ]);
 
 pub(super) fn item(p: &mut Parser) {
@@ -26,7 +25,7 @@ pub(super) fn item(p: &mut Parser) {
 /// `prop` item
 ///
 /// ```text
-/// prop [id] "string": type (allowed ones) [= default] [;]
+/// prop [id] "string": type (allowed ones) [= default] ;
 /// ```
 fn prop(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::DataKw));
@@ -51,14 +50,14 @@ fn prop(p: &mut Parser, m: Marker) {
         // TODO: default
     }
 
-    p.eat(T![;]);
+    p.expect(T![;]);
     m.complete(p, SyntaxKind::PropItem);
 }
 
 /// `entity` item
 ///
 /// ```text
-/// entity [id] "string": type (record w/ links) [= default] [;]
+/// entity [id] "string": type (record w/ links) [= default] ;
 /// ```
 fn entity(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::EntityKw));
@@ -83,14 +82,14 @@ fn entity(p: &mut Parser, m: Marker) {
         // TODO: default
     }
 
-    p.eat(T![;]);
+    p.expect(T![;]);
     m.complete(p, SyntaxKind::EntityItem);
 }
 
 /// `data` item
 ///
 /// ```text
-/// data [id] "string": type (tbd) [;]
+/// data [id] "string": type (tbd) ;
 /// ```
 ///
 /// TODO: insert id once it has been run once and an id as been assigned
@@ -113,14 +112,14 @@ fn data(p: &mut Parser, m: Marker) {
 
     // TODO: type
 
-    p.eat(T![;]);
+    p.expect(T![;]);
     m.complete(p, SyntaxKind::DataItem);
 }
 
 /// `link` item
 ///
 /// ```text
-/// link [id] "string" [;]
+/// link [id] "string" ;
 /// ```
 fn link(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::LinkKw));
@@ -137,14 +136,14 @@ fn link(p: &mut Parser, m: Marker) {
         );
     }
 
-    p.eat(T![;]);
+    p.expect(T![;]);
     m.complete(p, SyntaxKind::LinkItem);
 }
 
 /// `use` item
 ///
 /// ```text
-/// use path [;]
+/// use path ;
 /// ```
 fn use_(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::UseKw));
@@ -152,14 +151,14 @@ fn use_(p: &mut Parser, m: Marker) {
 
     path(p);
 
-    p.eat(T![;]);
+    p.expect(T![;]);
     m.complete(p, SyntaxKind::UseItem);
 }
 
 /// `set` item
 ///
 /// ```set
-/// set path = expr [;]
+/// set path = expr ;
 /// ```
 fn set(p: &mut Parser, m: Marker) {
     assert!(p.at_contextual_kw(SyntaxKind::SetKw));
@@ -171,6 +170,7 @@ fn set(p: &mut Parser, m: Marker) {
 
     // TODO: expression
 
+    p.expect(T![;]);
     m.complete(p, SyntaxKind::SetItem);
 }
 

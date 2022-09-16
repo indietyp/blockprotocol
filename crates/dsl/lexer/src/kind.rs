@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH AF6F82FDCC6DD6B3967505D4B94EEDBBE90E720458B57250AFBDF705FB358AC3
+//! GENERATED WITH B6C2E8BB362605DAFFD174B8947D943F870ED91FCC4A666CB9B2990B2A523231
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
@@ -28,6 +28,10 @@ pub enum Kind {
     Minus,
     #[token("*")]
     Star,
+    #[token("%")]
+    Percent,
+    #[token("^")]
+    Caret,
     #[token("~")]
     Tilde,
     #[token("/")]

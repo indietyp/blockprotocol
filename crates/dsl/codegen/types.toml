@@ -37,6 +37,12 @@ is = ['infix-op', 'prefix-op']
 [kind.star]
 token = "*"
 
+[kind.percent]
+token = "%"
+
+[kind.caret]
+token = "^"
+
 [kind.tilde]
 token = "~"
 
@@ -203,6 +209,18 @@ is = ['trivia']
 # These are compound syntax kinds, which are supposed to be joined together
 [syntax.colon2]
 shortcut = "::"
+[syntax.pipe2]
+shortcut = "||"
+[syntax.greater-than2]
+shortcut = ">>"
+[syntax.less-than2]
+shortcut = "<<"
+[syntax.eq2]
+shortcut = "=="
+[syntax.star2]
+shortcut = "**"
+[syntax.ampersand2]
+shortcut = "&&"
 [syntax.dot2]
 shortcut = ".."
 [syntax.dot2-eq]
