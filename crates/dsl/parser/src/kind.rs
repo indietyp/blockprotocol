@@ -231,69 +231,69 @@ impl Parser<'_> {
     }
 }
 impl Affix {
-    pub(crate) fn infix(p: &Parser) -> Option<(Associativity, Precedence)> {
+    pub(crate) fn infix(p: &Parser) -> Option<(SyntaxKind, Associativity, Precedence)> {
         if p.at(T ! [..=]) {
-            Some((Associativity::Left, Precedence(3u32)))
+            Some((T ! [..=], Associativity::Left, Precedence(3u32)))
         } else if p.at(T![..]) {
-            Some((Associativity::Left, Precedence(3u32)))
+            Some((T![..], Associativity::Left, Precedence(3u32)))
         } else if p.at(T ! [||]) {
-            Some((Associativity::Left, Precedence(5u32)))
+            Some((T ! [||], Associativity::Left, Precedence(5u32)))
         } else if p.at(T ! [&&]) {
-            Some((Associativity::Left, Precedence(7u32)))
+            Some((T ! [&&], Associativity::Left, Precedence(7u32)))
         } else if p.at(T ! [==]) {
-            Some((Associativity::Left, Precedence(11u32)))
+            Some((T ! [==], Associativity::Left, Precedence(11u32)))
         } else if p.at(T ! [<=]) {
-            Some((Associativity::Left, Precedence(11u32)))
+            Some((T ! [<=], Associativity::Left, Precedence(11u32)))
         } else if p.at(T ! [>=]) {
-            Some((Associativity::Left, Precedence(11u32)))
+            Some((T ! [>=], Associativity::Left, Precedence(11u32)))
         } else if p.at(T ! [>>]) {
-            Some((Associativity::Left, Precedence(13u32)))
+            Some((T ! [>>], Associativity::Left, Precedence(13u32)))
         } else if p.at(T ! [<<]) {
-            Some((Associativity::Left, Precedence(13u32)))
+            Some((T ! [<<], Associativity::Left, Precedence(13u32)))
         } else if p.at(T ! [**]) {
-            Some((Associativity::Right, Precedence(25u32)))
+            Some((T ! [**], Associativity::Right, Precedence(25u32)))
         } else if p.at(T ! [=]) {
-            Some((Associativity::Left, Precedence(1u32)))
+            Some((T ! [=], Associativity::Left, Precedence(1u32)))
         } else if p.at(T ! [<]) {
-            Some((Associativity::Left, Precedence(11u32)))
+            Some((T ! [<], Associativity::Left, Precedence(11u32)))
         } else if p.at(T ! [>]) {
-            Some((Associativity::Left, Precedence(11u32)))
+            Some((T ! [>], Associativity::Left, Precedence(11u32)))
         } else if p.at(T ! [^]) {
-            Some((Associativity::Left, Precedence(15u32)))
+            Some((T ! [^], Associativity::Left, Precedence(15u32)))
         } else if p.at(T ! [&]) {
-            Some((Associativity::Left, Precedence(17u32)))
+            Some((T ! [&], Associativity::Left, Precedence(17u32)))
         } else if p.at(T ! [|]) {
-            Some((Associativity::Left, Precedence(19u32)))
+            Some((T ! [|], Associativity::Left, Precedence(19u32)))
         } else if p.at(T ! [+]) {
-            Some((Associativity::Left, Precedence(21u32)))
+            Some((T ! [+], Associativity::Left, Precedence(21u32)))
         } else if p.at(T ! [-]) {
-            Some((Associativity::Left, Precedence(21u32)))
+            Some((T ! [-], Associativity::Left, Precedence(21u32)))
         } else if p.at(T ! [*]) {
-            Some((Associativity::Left, Precedence(23u32)))
+            Some((T ! [*], Associativity::Left, Precedence(23u32)))
         } else if p.at(T ! [/]) {
-            Some((Associativity::Left, Precedence(23u32)))
+            Some((T ! [/], Associativity::Left, Precedence(23u32)))
         } else if p.at(T ! [%]) {
-            Some((Associativity::Left, Precedence(23u32)))
+            Some((T ! [%], Associativity::Left, Precedence(23u32)))
         } else {
             None
         }
     }
 
-    pub(crate) fn prefix(p: &Parser) -> Option<Precedence> {
+    pub(crate) fn prefix(p: &Parser) -> Option<(SyntaxKind, Precedence)> {
         if p.at(T![!]) {
-            Some(Precedence(9u32))
+            Some((T![!], Precedence(9u32)))
         } else if p.at(T ! [+]) {
-            Some(Precedence(27u32))
+            Some((T ! [+], Precedence(27u32)))
         } else if p.at(T ! [-]) {
-            Some(Precedence(27u32))
+            Some((T ! [-], Precedence(27u32)))
         } else {
             None
         }
     }
 
-    pub(crate) fn postfix(p: &Parser) -> Option<Precedence> {
+    pub(crate) fn postfix(p: &Parser) -> Option<(SyntaxKind, Precedence)> {
         if p.at(T ! [?]) {
-            Some(Precedence(29u32))
+            Some((T ! [?], Precedence(29u32)))
         } else {
             None
         }

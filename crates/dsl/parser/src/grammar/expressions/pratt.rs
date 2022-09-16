@@ -10,7 +10,11 @@
 //! TODO: implement the other one D:
 
 use crate::{
-    grammar::{attributes, expressions::atom, BlockLike},
+    grammar::{
+        attributes,
+        expressions::{atom, postfix::postfix_expr, Restrictions},
+        BlockLike,
+    },
     marker::{CompletedMarker, Marker},
     parser::Parser,
     token_set::TokenSet,
@@ -49,7 +53,6 @@ impl Precedence {
 pub(crate) enum Associativity {
     Left,
     Right,
-    Neither,
 }
 
 pub(crate) struct Affix;
@@ -64,14 +67,14 @@ pub(crate) struct Affix;
 
 const LHS_FIRST: TokenSet = atom::ATOM_EXPR_FIRST.union(TokenSet::new(&[T![!], T![.], T![-]]));
 
-fn lhs(p: &mut Parser) -> Option<(CompletedMarker, BlockLike)> {
-    match Affix::fetch(p) {
+fn lhs(p: &mut Parser, r: Restrictions) -> Option<(CompletedMarker, BlockLike)> {
+    match Affix::prefix(p) {
         //> test expr unary
-        Affix::Prefix(kind, bp) => {
+        Some((kind, precedence)) => {
             let m = p.start();
             p.bump(kind);
 
-            expr_bp(p, None, bp);
+            expr_bp(p, None, r, precedence);
 
             let cm = m.complete(p, SyntaxKind::PrefixExpr);
 
@@ -83,29 +86,95 @@ fn lhs(p: &mut Parser) -> Option<(CompletedMarker, BlockLike)> {
             //> test expr full_range
             for op in [T![..=], T![..]] {
                 if p.at(op) {
+                    // SAFETY: this in infallible, because it's always defined
+                    let precedence = Affix::infix(p).unwrap().2;
+
                     m = p.start();
                     p.bump(op);
+
                     if p.at_ts(LHS_FIRST) {
-                        // TODO
-                        expr_bp(p, None, Precedence(2));
+                        expr_bp(p, None, r, precedence.lower());
                     }
+
                     let cm = m.complete(p, SyntaxKind::RangeExpr);
                     return Some((cm, BlockLike::NotBlock));
                 }
             }
 
-            let (lhs, blocklike) = atom::atom_expr(p, r)?;
-            let (cm, block_like) =
-                postfix_expr(p, lhs, blocklike, !(r.prefer_stmt && blocklike.is_block()));
+            let (lhs, block_like) = atom::atom_expr(p, r)?;
+            let (cm, block_like) = postfix_expr(p, lhs, block_like, !block_like.is_block());
             return Some((cm, block_like));
         }
     }
 }
 
-fn expr_bp(p: &mut Parser, m: Option<Marker>, min_bp: Precedence) {
+fn expr_bp(
+    p: &mut Parser,
+    m: Option<Marker>,
+    r: Restrictions,
+    precedence: Precedence,
+) -> Option<(CompletedMarker, BlockLike)> {
     let m = m.unwrap_or_else(|| {
         let m = p.start();
         attributes::outer_attrs(p);
         m
     });
+
+    let mut lhs = match lhs(p, r) {
+        Some((lhs, block_like)) => {
+            let lhs = lhs.extend_to(p, m);
+
+            if block_like.is_block() {
+                return Some((lhs, BlockLike::Block));
+            }
+
+            lhs
+        }
+        None => {
+            m.abandon(p);
+            return None;
+        }
+    };
+
+    loop {
+        let bp = Affix::infix(p).map(|(kind, assoc, precedence)| match assoc {
+            Associativity::Left => (kind, precedence, precedence.raise()),
+            Associativity::Right => (kind, precedence.raise(), precedence),
+        });
+
+        if let Some((op, l_bp, r_bp)) = bp {
+            let is_range = p.at(T![..]) || p.at(T![..=]);
+
+            if l_bp < precedence {
+                break;
+            }
+
+            let m = lhs.precede(p);
+            p.bump(op);
+
+            if is_range {
+                //> test expr postfix_range
+                let has_trailing_expression = p.at_ts(LHS_FIRST) && !p.at(T!['{']);
+                if !has_trailing_expression {
+                    // no RHS
+                    lhs = m.complete(p, SyntaxKind::RangeExpr);
+                    break;
+                }
+            }
+
+            expr_bp(p, None, r, r_bp);
+            lhs = m.complete(
+                p,
+                if is_range {
+                    SyntaxKind::RangeExpr
+                } else {
+                    SyntaxKind::InfixExpr
+                },
+            );
+        } else {
+            break;
+        }
+    }
+
+    Some((lhs, BlockLike::NotBlock))
 }

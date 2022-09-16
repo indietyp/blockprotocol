@@ -182,7 +182,7 @@ fn affix(config: &Config) -> quote::__private::TokenStream {
         .map(|(prio, _, ident, assoc)| {
             quote! {
                 if p.at(T![#ident]) {
-                    Some((#assoc, Precedence(#prio)))
+                    Some((T![#ident], #assoc, Precedence(#prio)))
                 }
             }
         });
@@ -194,7 +194,7 @@ fn affix(config: &Config) -> quote::__private::TokenStream {
         .map(|(prio, _, ident)| {
             quote! {
                 if p.at(T![#ident]) {
-                    Some(Precedence(#prio))
+                    Some((T![#ident], Precedence(#prio)))
                 }
             }
         });
@@ -206,26 +206,26 @@ fn affix(config: &Config) -> quote::__private::TokenStream {
         .map(|(prio, _, ident)| {
             quote! {
                 if p.at(T![#ident]) {
-                    Some(Precedence(#prio))
+                    Some((T![#ident], Precedence(#prio)))
                 }
             }
         });
 
     quote! {
         impl Affix {
-            pub(crate) fn infix(p: &Parser) -> Option<(Associativity, Precedence)> {
+            pub(crate) fn infix(p: &Parser) -> Option<(SyntaxKind, Associativity, Precedence)> {
                 #(#infix else)* {
                     None
                 }
             }
 
-            pub(crate) fn prefix(p: &Parser) -> Option<Precedence> {
+            pub(crate) fn prefix(p: &Parser) -> Option<(SyntaxKind, Precedence)> {
                 #(#prefix else)* {
                     None
                 }
             }
 
-            pub(crate) fn postfix(p: &Parser) -> Option<Precedence> {
+            pub(crate) fn postfix(p: &Parser) -> Option<(SyntaxKind, Precedence)> {
                 #(#postfix else)* {
                     None
                 }
