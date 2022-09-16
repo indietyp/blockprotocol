@@ -8,15 +8,15 @@ pub(crate) fn postfix_expr(
 ) -> (CompletedMarker, BlockLike) {
     loop {
         lhs = match p.current() {
-            T!['('] if allow_calls => call_expr(p, lhs),
-            T!['['] if allow_calls => index_expr(p, lhs),
-            T![.] => match postfix_dot_expr(p, lhs) {
-                Ok(it) => it,
-                Err(it) => {
-                    lhs = it;
-                    break;
-                }
-            },
+            // T!['('] if allow_calls => call_expr(p, lhs),
+            // T!['['] if allow_calls => index_expr(p, lhs),
+            // T![.] => match postfix_dot_expr(p, lhs) {
+            //     Ok(it) => it,
+            //     Err(it) => {
+            //         lhs = it;
+            //         break;
+            //     }
+            // },
             _ => break,
         };
 

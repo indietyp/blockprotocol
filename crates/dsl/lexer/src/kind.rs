@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 46CF1F8C36105F3D0F501E2220C60FADF6B14282508C8CCFD2DA8BF979D5EB41
+//! GENERATED WITH 0C3B43AF67DCD09795F983F7D26808D9A03540B167A89AED49555285F8AA566E
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use logos::Logos;
@@ -79,6 +79,32 @@ pub enum Kind {
     LetKw,
     #[token("fn")]
     FnKw,
+    #[token("loop")]
+    LoopKw,
+    #[token("match")]
+    MatchKw,
+    #[token("for")]
+    ForKw,
+    #[token("if")]
+    IfKw,
+    #[token("else")]
+    ElseKw,
+    #[token("return")]
+    ReturnKw,
+    #[token("continue")]
+    ContinueKw,
+    #[token("break")]
+    BreakKw,
+    #[token("while")]
+    WhileKw,
+    #[token("try")]
+    TryKw,
+    #[token("static")]
+    StaticKw,
+    #[token("move")]
+    MoveKw,
+    #[token("async")]
+    AsyncKw,
     #[regex("\\s")]
     Whitespace,
     #[regex("//.*")]

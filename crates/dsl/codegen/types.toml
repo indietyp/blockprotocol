@@ -132,13 +132,52 @@ is = ['literal']
 token = "null"
 is = ['literal']
 
-# this is for now reserved
+#--------Reserved--------#
 [kind.let-kw]
 token = "let"
 
-# this is for now reserved
 [kind.fn-kw]
 token = "fn"
+
+[kind.loop-kw]
+token = "loop"
+
+[kind.match-kw]
+token = "match"
+
+[kind.for-kw]
+token = "for"
+
+[kind.if-kw]
+token = "if"
+
+[kind.else-kw]
+token = "else"
+
+[kind.return-kw]
+token = "return"
+
+[kind.continue-kw]
+token = "continue"
+
+[kind.break-kw]
+token = "break"
+
+[kind.while-kw]
+token = "while"
+
+[kind.try-kw]
+token = "try"
+
+[kind.static-kw]
+token = "static"
+
+[kind.move-kw]
+token = "move"
+
+[kind.async-kw]
+token = "async"
+#------------------------#
 
 [kind.whitespace]
 regex = ["\\s"]

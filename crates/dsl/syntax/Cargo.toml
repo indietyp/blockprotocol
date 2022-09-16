@@ -8,6 +8,9 @@ edition = "2021"
 [dependencies]
 error-stack = { git = "https://github.com/hashintel/hash.git" }
 
+num-traits = "0.2.15"
+
 rowan = "0.15.8"
 
 lexer = { path = "../lexer" }
+parser = {path = "../parser"}

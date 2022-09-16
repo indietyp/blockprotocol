@@ -108,7 +108,7 @@ fn lhs(p: &mut Parser, r: Restrictions) -> Option<(CompletedMarker, BlockLike)> 
     }
 }
 
-fn expr_bp(
+pub(super) fn expr_bp(
     p: &mut Parser,
     m: Option<Marker>,
     r: Restrictions,

@@ -1,5 +1,9 @@
 use crate::{
-    grammar::paths, marker::CompletedMarker, parser::Parser, token_set::TokenSet, SyntaxKind,
+    grammar::{expressions::expr, paths},
+    marker::CompletedMarker,
+    parser::Parser,
+    token_set::TokenSet,
+    SyntaxKind,
 };
 
 pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
@@ -71,7 +75,7 @@ pub(crate) fn literal_string(p: &mut Parser) -> Option<CompletedMarker> {
     }
 }
 
-// TODO: literal prefix and suffix for strings
+// TODO: literal prefix and suffix for strings (FIRST)
 pub(crate) fn literal(p: &mut Parser) -> Option<CompletedMarker> {
     if let Some(marker) = literal_string(p) {
         return Some(marker);
@@ -84,4 +88,69 @@ pub(crate) fn literal(p: &mut Parser) -> Option<CompletedMarker> {
     let m = p.start();
     p.bump_any();
     Some(m.complete(p, SyntaxKind::Literal))
+}
+
+pub(crate) fn tuple_expr(p: &mut Parser) -> CompletedMarker {
+    assert!(p.at(T!['(']));
+
+    let m = p.start();
+    p.expect(T!['(']);
+
+    let mut saw_comma = false;
+    let mut saw_expr = false;
+
+    while !p.at(SyntaxKind::EndOfFile) && !p.at(T![')']) {
+        saw_expr = true;
+
+        //> test expr tuple_attrs
+        if !expr(p) {
+            break;
+        }
+
+        if !p.at(T![')']) {
+            saw_comma = true;
+            p.expect(T![,]);
+        }
+    }
+
+    p.expect(T![')']);
+    m.complete(
+        p,
+        if saw_expr && !saw_comma {
+            SyntaxKind::ParenExpr
+        } else {
+            SyntaxKind::TupleExpr
+        },
+    )
+}
+
+fn array_expr(p: &mut Parser<'_>) -> CompletedMarker {
+    assert!(p.at(T!['[']));
+    let m = p.start();
+
+    let mut n_exprs = 0u32;
+    let mut has_semi = false;
+
+    p.bump(T!['[']);
+    while !p.at(SyntaxKind::EndOfFile) && !p.at(T![']']) {
+        n_exprs += 1;
+
+        // test array_attrs
+        // const A: &[i64] = &[1, #[cfg(test)] 2];
+        if !expr(p) {
+            break;
+        }
+
+        if n_exprs == 1 && p.eat(T![;]) {
+            has_semi = true;
+            continue;
+        }
+
+        if has_semi || !p.at(T![']']) && !p.expect(T![,]) {
+            break;
+        }
+    }
+    p.expect(T![']']);
+
+    m.complete(p, SyntaxKind::ListExpr)
 }

@@ -6,7 +6,7 @@ use num_traits::{FromPrimitive, ToPrimitive};
 use parser::kind::SyntaxKind;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 
-use crate::error::SyntaxError;
+use crate::{error::SyntaxError, parse::Parse};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum PikaLanguage {}
@@ -53,13 +53,14 @@ impl SyntaxTreeBuilder {
 
     pub fn finish(self) -> Parse<SyntaxNode> {
         let (green, errors) = self.finish_raw();
+        todo!()
         // TODO
         // // Disable block validation, see https://github.com/rust-lang/rust-analyzer/pull/10357
         // if cfg!(debug_assertions) && false {
         //     let node = SyntaxNode::new_root(green.clone());
         //     crate::validation::validate_block_structure(&node);
         // }
-        Parse::new(green, errors)
+        // Parse::new(green, errors)
     }
 
     pub fn token(&mut self, kind: SyntaxKind, text: &str) {
