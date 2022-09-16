@@ -11,6 +11,11 @@ pub(crate) mod pratt;
 #[derive(Clone, Copy)]
 struct Restrictions {}
 
+// record type: S {ref-ref = default}
+// record expr: S {ref-ref: 12, ref-ref: 12}
+// map type: {[string]: string}
+// map expr: {ident: 12}
+
 pub(super) fn expr(p: &mut Parser<'_>) -> bool {
     let r = Restrictions {};
     expr_bp(p, None, r, Precedence(1)).is_some()
