@@ -1,2 +1,2 @@
 pub(crate) mod atom;
-mod pratt;
+pub(crate) mod pratt;

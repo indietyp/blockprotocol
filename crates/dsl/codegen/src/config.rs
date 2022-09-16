@@ -56,9 +56,23 @@ pub(crate) struct Syntax {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) struct Precedence {
+    #[serde(default)]
+    pub(crate) infix_left: Vec<String>,
+    #[serde(default)]
+    pub(crate) infix_right: Vec<String>,
+    #[serde(default)]
+    pub(crate) prefix: Vec<String>,
+    #[serde(default)]
+    pub(crate) postfix: Vec<String>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
 pub(crate) struct Config {
     pub(crate) kind: IndexMap<String, Kind>,
     pub(crate) syntax: IndexMap<String, Syntax>,
+    pub(crate) precedence: Vec<Precedence>,
 }
 
 impl Config {

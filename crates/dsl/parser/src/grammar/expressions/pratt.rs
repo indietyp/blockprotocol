@@ -52,13 +52,7 @@ pub(crate) enum Associativity {
     Neither,
 }
 
-#[derive(Copy, Clone)]
-pub(crate) enum Affix {
-    None,
-    Prefix(SyntaxKind, Precedence),
-    Postfix(SyntaxKind, Precedence),
-    Infix(SyntaxKind, Precedence, Associativity),
-}
+pub(crate) struct Affix;
 
 //         <lbp>  <rbp>  <nbp> <kind>
 // Nilfix:  MIN |  MIN |  MAX | nud
@@ -67,47 +61,6 @@ pub(crate) enum Affix {
 // InfixL:   bp |   bp | bp+1 | led
 // InfixR:   bp | bp-1 | bp+1 | led
 // InfixN:   bp |   bp |   bp | led
-impl Affix {
-    fn fetch(p: &mut Parser) -> Affix {
-        // TODO: use the other approach outlined, this one is flawed D:
-        match p.current() {
-            T![.] if p.at(T![..=]) => Affix::Infix(T![..=], Precedence(20), Associativity::Left),
-            T![.] if p.at(T![..]) => Affix::Infix(T![..], Precedence(20), Associativity::Left),
-
-            T![|] if p.at(T![||]) => Affix::Infix(T![||], Precedence(30), Associativity::Left),
-            T![|] => Affix::Infix(T![|], Precedence(60), Associativity::Left),
-
-            T![^] => Affix::Infix(T![^], Precedence(70), Associativity::Left),
-
-            T![&] if p.at(T![&&]) => Affix::Infix(T![&&], Precedence(40), Associativity::Left),
-            T![&] => Affix::Infix(T![&], Precedence(80), Associativity::Left),
-
-            T![!] => Affix::Prefix(T![!], Precedence(45)),
-
-            T![=] if p.at(T![==]) => Affix::Infix(T![==], Precedence(50), Associativity::Left),
-            T![=] => Affix::Infix(T![=], Precedence(10), Associativity::Neither),
-
-            T![>] if p.at(T![>>]) => Affix::Infix(T![>>], Precedence(90), Associativity::Left),
-            T![>] => Affix::Infix(T![>], Precedence(50), Associativity::Left),
-
-            T![<] if p.at(T![<<]) => Affix::Infix(T![<<], Precedence(9), Associativity::Left),
-            T![<] => Affix::Infix(T![<], Precedence(50), Associativity::Left),
-
-            T![+] => Affix::Infix(T![+], Precedence(100), Associativity::Left),
-            // TODO: this can also be unary!
-            T![-] => Affix::Infix(T![-], Precedence(100), Associativity::Left),
-
-            T![%] => Affix::Infix(T![%], Precedence(110), Associativity::Left),
-
-            T![*] if p.at(T![**]) => Affix::Infix(T![*], Precedence(120), Associativity::Right),
-
-            T![*] => Affix::Infix(T![*], Precedence(110), Associativity::Left),
-            T![/] => Affix::Infix(T![/], Precedence(110), Associativity::Left),
-
-            _ => Affix::None,
-        }
-    }
-}
 
 const LHS_FIRST: TokenSet = atom::ATOM_EXPR_FIRST.union(TokenSet::new(&[T![!], T![.], T![-]]));
 

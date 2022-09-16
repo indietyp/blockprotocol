@@ -1,11 +1,14 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 4F48021BB1E6E0642A0C2460ADF4C13822ECEBF702E6CEF5BBD4DE3E2569D2B4
+//! GENERATED WITH 46CF1F8C36105F3D0F501E2220C60FADF6B14282508C8CCFD2DA8BF979D5EB41
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
 use num_derive::{FromPrimitive, ToPrimitive};
 
-use crate::parser::Parser;
+use crate::{
+    grammar::{Affix, Associativity, Precedence},
+    parser::Parser,
+};
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
 pub enum SyntaxKind {
     Colon,
@@ -205,7 +208,6 @@ impl SyntaxKind {
         }
     }
 }
-
 impl Parser<'_> {
     pub(crate) fn nth_at(&self, n: usize, kind: SyntaxKind) -> bool {
         match kind {
@@ -225,6 +227,75 @@ impl Parser<'_> {
             SyntaxKind::LtMinus => self.at_composite2(n, T ! [<], T ! [-]),
             SyntaxKind::LtTilde => self.at_composite2(n, T ! [<], T ! [~]),
             _ => self.inp.kind(self.pos + n) == kind,
+        }
+    }
+}
+impl Affix {
+    pub(crate) fn infix(p: &Parser) -> Option<(Associativity, Precedence)> {
+        if p.at(T ! [..=]) {
+            Some((Associativity::Left, Precedence(3u32)))
+        } else if p.at(T![..]) {
+            Some((Associativity::Left, Precedence(3u32)))
+        } else if p.at(T ! [||]) {
+            Some((Associativity::Left, Precedence(5u32)))
+        } else if p.at(T ! [&&]) {
+            Some((Associativity::Left, Precedence(7u32)))
+        } else if p.at(T ! [==]) {
+            Some((Associativity::Left, Precedence(11u32)))
+        } else if p.at(T ! [<=]) {
+            Some((Associativity::Left, Precedence(11u32)))
+        } else if p.at(T ! [>=]) {
+            Some((Associativity::Left, Precedence(11u32)))
+        } else if p.at(T ! [>>]) {
+            Some((Associativity::Left, Precedence(13u32)))
+        } else if p.at(T ! [<<]) {
+            Some((Associativity::Left, Precedence(13u32)))
+        } else if p.at(T ! [**]) {
+            Some((Associativity::Right, Precedence(25u32)))
+        } else if p.at(T ! [=]) {
+            Some((Associativity::Left, Precedence(1u32)))
+        } else if p.at(T ! [<]) {
+            Some((Associativity::Left, Precedence(11u32)))
+        } else if p.at(T ! [>]) {
+            Some((Associativity::Left, Precedence(11u32)))
+        } else if p.at(T ! [^]) {
+            Some((Associativity::Left, Precedence(15u32)))
+        } else if p.at(T ! [&]) {
+            Some((Associativity::Left, Precedence(17u32)))
+        } else if p.at(T ! [|]) {
+            Some((Associativity::Left, Precedence(19u32)))
+        } else if p.at(T ! [+]) {
+            Some((Associativity::Left, Precedence(21u32)))
+        } else if p.at(T ! [-]) {
+            Some((Associativity::Left, Precedence(21u32)))
+        } else if p.at(T ! [*]) {
+            Some((Associativity::Left, Precedence(23u32)))
+        } else if p.at(T ! [/]) {
+            Some((Associativity::Left, Precedence(23u32)))
+        } else if p.at(T ! [%]) {
+            Some((Associativity::Left, Precedence(23u32)))
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn prefix(p: &Parser) -> Option<Precedence> {
+        if p.at(T![!]) {
+            Some(Precedence(9u32))
+        } else if p.at(T ! [+]) {
+            Some(Precedence(27u32))
+        } else if p.at(T ! [-]) {
+            Some(Precedence(27u32))
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn postfix(p: &Parser) -> Option<Precedence> {
+        if p.at(T ! [?]) {
+            Some(Precedence(29u32))
+        } else {
+            None
         }
     }
 }

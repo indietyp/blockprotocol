@@ -4,11 +4,12 @@ use std::{
 };
 
 use error_stack::{Report, Result, ResultExt};
+use itertools::Itertools;
 use quote::{__private::TokenTree, format_ident, quote};
 use syn::__private::TokenStream;
 
 use crate::{
-    config::Is,
+    config::{Is, Precedence},
     hash::hash_verify,
     lexer::find_is,
     utils,
@@ -121,19 +122,113 @@ fn composite(config: &Config) -> quote::__private::TokenStream {
     }
 }
 
-fn precedence() -> quote::__private::TokenStream {
+fn affix(config: &Config) -> quote::__private::TokenStream {
+    let (other, postfix): (Vec<_>, Vec<_>) = config
+        .precedence
+        .iter()
+        .enumerate()
+        .map(|(idx, prec)| {
+            let idx = (idx * 2 + 1) as u32;
+
+            let infix = prec
+                .infix_left
+                .iter()
+                .map(|infix| {
+                    let len = infix.len();
+                    let infix = syn::parse_str::<syn::__private::TokenStream2>(infix).unwrap();
+
+                    (idx, len, infix, quote!(Associativity::Left))
+                })
+                .chain(prec.infix_right.iter().map(|infix| {
+                    let len = infix.len();
+                    let infix = syn::parse_str::<syn::__private::TokenStream2>(infix).unwrap();
+
+                    (idx, len, infix, quote!(Associativity::Right))
+                }))
+                .collect::<Vec<_>>();
+
+            let prefix = prec
+                .prefix
+                .iter()
+                .map(|prefix| {
+                    let len = prefix.len();
+                    let prefix = syn::parse_str::<syn::__private::TokenStream2>(prefix).unwrap();
+
+                    (idx, len, prefix)
+                })
+                .collect::<Vec<_>>();
+
+            let postfix = prec
+                .postfix
+                .iter()
+                .map(|postfix| {
+                    let len = prefix.len();
+                    let postfix = syn::parse_str::<syn::__private::TokenStream2>(postfix).unwrap();
+
+                    (idx, len, postfix)
+                })
+                .collect::<Vec<_>>();
+
+            ((infix, prefix), postfix)
+        })
+        .unzip();
+
+    let (infix, prefix): (Vec<_>, Vec<_>) = other.into_iter().unzip();
+
+    let infix = infix
+        .into_iter()
+        .flatten()
+        .sorted_by_key(|(_, len, ..)| -(*len as isize))
+        .map(|(prio, _, ident, assoc)| {
+            quote! {
+                if p.at(T![#ident]) {
+                    Some((#assoc, Precedence(#prio)))
+                }
+            }
+        });
+
+    let prefix = prefix
+        .into_iter()
+        .flatten()
+        .sorted_by_key(|(_, len, ..)| -(*len as isize))
+        .map(|(prio, _, ident)| {
+            quote! {
+                if p.at(T![#ident]) {
+                    Some(Precedence(#prio))
+                }
+            }
+        });
+
+    let postfix = postfix
+        .into_iter()
+        .flatten()
+        .sorted_by_key(|(_, len, ..)| -(*len as isize))
+        .map(|(prio, _, ident)| {
+            quote! {
+                if p.at(T![#ident]) {
+                    Some(Precedence(#prio))
+                }
+            }
+        });
+
     quote! {
-        impl SyntaxKind {
-            fn precedence_infix() -> Option<(Associativity, Precedence)> {
-
+        impl Affix {
+            pub(crate) fn infix(p: &Parser) -> Option<(Associativity, Precedence)> {
+                #(#infix else)* {
+                    None
+                }
             }
 
-            fn precedence_prefix() -> Option<Precedence> {
-
+            pub(crate) fn prefix(p: &Parser) -> Option<Precedence> {
+                #(#prefix else)* {
+                    None
+                }
             }
 
-            fn precedence_postfix() -> Option<Precedence> {
-
+            pub(crate) fn postfix(p: &Parser) -> Option<Precedence> {
+                #(#postfix else)* {
+                    None
+                }
             }
         }
     }
@@ -150,7 +245,10 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         use lexer::Kind;
         use num_derive::{FromPrimitive, ToPrimitive};
 
-        use crate::parser::Parser;
+        use crate::{
+            grammar::{Associativity, Precedence, Affix},
+            parser::Parser,
+        };
     };
 
     let kinds = config
@@ -183,6 +281,7 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     });
 
     let composite = composite(config);
+    let affix = affix(config);
 
     let type_ = quote! {
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, FromPrimitive, ToPrimitive, Copy, Clone, Hash)]
@@ -228,6 +327,8 @@ pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
         }
 
         #composite
+
+        #affix
     };
 
     let stream = quote! {

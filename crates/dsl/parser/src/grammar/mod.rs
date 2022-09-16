@@ -3,6 +3,8 @@ mod expressions;
 mod items;
 mod paths;
 
+pub(crate) use expressions::pratt::{Affix, Associativity, Precedence};
+
 use crate::{
     error::{Expected, ExpectedError},
     parser::Parser,
