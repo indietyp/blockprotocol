@@ -121,6 +121,24 @@ fn composite(config: &Config) -> quote::__private::TokenStream {
     }
 }
 
+fn precedence() -> quote::__private::TokenStream {
+    quote! {
+        impl SyntaxKind {
+            fn precedence_infix() -> Option<(Associativity, Precedence)> {
+
+            }
+
+            fn precedence_prefix() -> Option<Precedence> {
+
+            }
+
+            fn precedence_postfix() -> Option<Precedence> {
+
+            }
+        }
+    }
+}
+
 pub(crate) fn generate(config: &Config) -> Result<(), GenerationError> {
     if check().change_context(GenerationError::Check)? {
         return Ok(());

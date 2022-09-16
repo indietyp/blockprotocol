@@ -268,7 +268,9 @@ contextual = "use"
 [syntax.set-kw]
 contextual = "set"
 
-# Precedence table
+#----------------------------#
+#       Precedence Table     #
+#----------------------------#
 [[precedence]]
 infix-left = ["="]
 
