@@ -8,6 +8,7 @@ pub(crate) mod postfix;
 pub(crate) mod pratt;
 
 // TODO: change how we handle `{}` and blocks!
+// TODO: implement proposal I.3
 
 // for now this is empty
 #[derive(Clone, Copy)]
