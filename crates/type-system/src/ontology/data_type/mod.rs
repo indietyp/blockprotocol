@@ -6,6 +6,11 @@ mod wasm;
 use std::{collections::HashMap, str::FromStr};
 
 pub use error::ParseDataTypeError;
+use serde_json::Value;
+use z3::{
+    ast::{Ast, Bool, Int, Real},
+    Config, Context, DeclKind, FuncDecl, Optimize, SatResult, Solver, Sort, SortDiffers,
+};
 
 use crate::{
     uri::{BaseUri, ParseVersionedUriError, VersionedUri},
@@ -71,6 +76,133 @@ impl DataType {
     #[must_use]
     pub fn additional_properties_mut(&mut self) -> &mut HashMap<String, serde_json::Value> {
         &mut self.additional_properties
+    }
+
+    /// # Panics
+    ///
+    /// currently under construction
+    pub fn validate(&self) -> bool {
+        let cfg = Config::new();
+        let ctx = Context::new(&cfg);
+
+        let proof = match self.json_type() {
+            "string" => {
+                let string = z3::ast::String::new_const(&ctx, 1);
+                let mut constraints = vec![];
+
+                let len = unsafe {
+                    FuncDecl::from_raw(&ctx, (&mut DeclKind::SEQ_LENGTH) as *mut DeclKind as *mut _)
+                };
+                let length = len.apply(&[&string]).as_int().unwrap();
+
+                if let Some(Value::Number(min)) = self.additional_properties().get("minLength") {
+                    let mut min = Int::from_i64(&ctx, min.as_i64().unwrap());
+
+                    constraints.push(length.ge(&min));
+                }
+
+                if let Some(Value::Number(max)) = self.additional_properties().get("maxLength") {
+                    let mut max = Int::from_i64(&ctx, max.as_i64().unwrap());
+
+                    constraints.push(length.le(&max));
+                }
+
+                Bool::and(&ctx, &constraints.iter().collect::<Vec<_>>())
+            }
+            "bool" => Bool::from_bool(&ctx, true),
+            "number" => {
+                let number = Real::new_const(&ctx, 1);
+                let mut constraints = vec![];
+
+                if let Some(Value::Number(min)) = self.additional_properties().get("min") {
+                    let val = min.as_f64().unwrap().to_string();
+                    let mut min = val.split('.');
+                    let min = Real::from_real_str(&ctx, min.next().unwrap(), min.next().unwrap())
+                        .unwrap();
+
+                    constraints.push(number.ge(&min));
+                }
+
+                if let Some(Value::Number(max)) = self.additional_properties().get("max") {
+                    let val = max.as_f64().unwrap().to_string();
+                    let mut max = val.split('.');
+                    let max = Real::from_real_str(&ctx, max.next().unwrap(), max.next().unwrap())
+                        .unwrap();
+
+                    constraints.push(number.le(&max));
+                }
+
+                if let Some(Value::Number(min)) = self.additional_properties().get("minExclusive") {
+                    let val = min.as_f64().unwrap().to_string();
+                    let mut min = val.split('.');
+                    let min = Real::from_real_str(&ctx, min.next().unwrap(), min.next().unwrap())
+                        .unwrap();
+
+                    constraints.push(number.gt(&min));
+                }
+
+                if let Some(Value::Number(max)) = self.additional_properties().get("maxExclusive") {
+                    let val = max.as_f64().unwrap().to_string();
+                    let mut max = val.split('.');
+                    let max = Real::from_real_str(&ctx, max.next().unwrap(), max.next().unwrap())
+                        .unwrap();
+
+                    constraints.push(number.lt(&max));
+                }
+
+                Bool::and(&ctx, &constraints.iter().collect::<Vec<_>>())
+            }
+            "integer" => {
+                let integer = Int::new_const(&ctx, 1);
+                let mut constraints = vec![];
+
+                if let Some(Value::Number(min)) = self.additional_properties().get("min") {
+                    let mut min = Int::from_i64(&ctx, min.as_i64().unwrap());
+                    constraints.push(integer.ge(&min));
+                }
+
+                if let Some(Value::Number(max)) = self.additional_properties().get("max") {
+                    let mut max = Int::from_i64(&ctx, max.as_i64().unwrap());
+                    constraints.push(integer.le(&max));
+                }
+
+                if let Some(Value::Number(min)) = self.additional_properties().get("minExclusive") {
+                    let mut min = Int::from_i64(&ctx, min.as_i64().unwrap());
+                    constraints.push(integer.gt(&min));
+                }
+
+                if let Some(Value::Number(max)) = self.additional_properties().get("maxExclusive") {
+                    let mut max = Int::from_i64(&ctx, max.as_i64().unwrap());
+                    constraints.push(integer.lt(&max));
+                }
+
+                Bool::and(&ctx, &constraints.iter().collect::<Vec<_>>())
+            }
+            _ => unimplemented!(),
+        };
+
+        let solver = Solver::new(&ctx);
+        solver.assert(&proof);
+
+        let result = solver.check();
+        println!("{}", proof.simplify());
+        println!("{:?}", result);
+
+        let res = matches!(result, SatResult::Sat);
+
+        let optimize = Optimize::new(&ctx);
+        optimize.minimize(&Int::new_const(&ctx, 1));
+        optimize.check(&[proof.clone()]);
+        let model = optimize.get_model().unwrap();
+        println!("Minimum: {}", model);
+
+        let optimize = Optimize::new(&ctx);
+        optimize.maximize(&Int::new_const(&ctx, 1));
+        optimize.check(&[proof.clone()]);
+        let model = optimize.get_model().unwrap();
+        println!("Maximum: {}", model);
+
+        res
     }
 }
 
@@ -239,5 +371,27 @@ mod tests {
         data_type_ref
             .validate_uri(uri_b.base_uri()) // Try and validate against a different URI
             .expect_err("expected validation against base URI to fail but it didn't");
+    }
+
+    #[test]
+    fn validate_constraints() {
+        let ty = DataType::new(
+            VersionedUri::from_str("https://blockprotocol.org/@alice/types/property-type/age/v/2")
+                .expect("failed to parse VersionedUri"),
+            "Age".to_owned(),
+            None,
+            "integer".to_owned(),
+            {
+                let mut map = HashMap::new();
+                map.insert("min".to_owned(), 3.into());
+                map.insert("minExclusive".to_owned(), 5.into());
+                map.insert("max".to_owned(), 17.into());
+                map.insert("maxExclusive".to_owned(), 17.into());
+
+                map
+            },
+        );
+
+        assert!(ty.validate());
     }
 }

@@ -19,6 +19,8 @@ thiserror = "1.0.32"
 tsify = { git = "https://github.com/hashdeps/tsify", branch = "am/undefined-test" }
 url = "2.2.2"
 
+z3 = {version="0.11.2", features = ["static-link-z3"]}
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { version = "0.2.63", features = ["serde-serialize"] }
 # The `console_error_panic_hook` crate provides better debugging of panics by
