@@ -31,21 +31,15 @@ fn ref_ident(p: &mut Parser) -> Option<CompletedMarker> {
         }
     };
 
-    while p.eat(SyntaxKind::Minus) {
+    while p.eat(T![-]) {
         name_ref(p);
     }
 
     Some(m.complete(p, SyntaxKind::ReferenceRef))
 }
 
-fn ref_version(p: &mut Parser) -> Option<CompletedMarker> {
-    if !p.at(SyntaxKind::Slash) {
-        return None;
-    }
-
+fn ref_version(p: &mut Parser) -> CompletedMarker {
     let m = p.start();
-
-    p.eat(SyntaxKind::Slash);
 
     if p.at_contextual_kw(SyntaxKind::LatestKw) {
         p.eat(SyntaxKind::Ident);
@@ -54,9 +48,46 @@ fn ref_version(p: &mut Parser) -> Option<CompletedMarker> {
         p.expect(SyntaxKind::Integer);
     }
 
-    Some(m.complete(p, SyntaxKind::ReferenceVersion))
+    m.complete(p, SyntaxKind::ReferenceVersion)
 }
 
 fn ref_expr(p: &mut Parser) -> Option<CompletedMarker> {
-    todo!()
+    if !p.at_ts(TokenSet::new(&[
+        T![@],
+        T![#],
+        T![>],
+        T![~],
+        SyntaxKind::Ident,
+    ])) {
+        return None;
+    }
+
+    let m = p.start();
+
+    ref_ty(p);
+
+    // conditional parsing, depending on if we have `::` the ident is either id or repo.
+    // we use `precede()` to surround it with the correct kind.
+    let repo_or_id = ref_ident(p);
+
+    if p.eat(T![::]) {
+        if let Some(repo) = repo_or_id {
+            let m = repo.precede(p);
+            m.complete(p, SyntaxKind::ReferenceRepo);
+        }
+
+        let m = p.start();
+        ref_ident(p);
+
+        m.complete(p, SyntaxKind::ReferenceId);
+    } else if let Some(id) = repo_or_id {
+        let m = id.precede(p);
+        m.complete(p, SyntaxKind::ReferenceId);
+    }
+
+    if p.eat(T![/]) {
+        ref_version(p);
+    }
+
+    Some(m.complete(p, SyntaxKind::ReferenceRef))
 }

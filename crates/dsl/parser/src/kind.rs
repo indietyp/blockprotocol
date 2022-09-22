@@ -1,5 +1,5 @@
 //! THIS FILE HAS BEEN AUTOMATICALLY GENERATED
-//! GENERATED WITH 3AD5B0AC99951294515219E0EA6159CAF1B52D166D1D5501281B6CB4BA252C54
+//! GENERATED WITH 4451494C3556662D35176D47BC98FA40848DDEF7E3F90D85B3DFFA2BFE121558
 
 #![allow(missing_docs, reason = "file is automatically generated")]
 use lexer::Kind;
@@ -100,6 +100,8 @@ pub enum SyntaxKind {
     LiteralStringSuffix,
     ReferenceType,
     ReferenceVersion,
+    ReferenceRepo,
+    ReferenceId,
     ReferenceRef,
     Name,
     NameRef,
