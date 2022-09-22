@@ -155,6 +155,20 @@ fn array_expr(p: &mut Parser<'_>) -> CompletedMarker {
     m.complete(p, SyntaxKind::ListExpr)
 }
 
+/// This is currently not implemented, and only matches `do { }`
+///
+/// This is reserved syntax, which is parsed, but not syntax and may be used in the future.
+pub(crate) fn block_expr(p: &mut Parser) -> CompletedMarker {
+    assert!(p.at(T![do]));
+
+    let m = p.start();
+    p.expect(T![do]);
+    p.expect(T!['{']);
+    p.expect(T!['}']);
+
+    m.complete(p, SyntaxKind::BlockExpr)
+}
+
 // TODO: record-expr
 // TODO: postfix-expr
 // TODO: map-expr

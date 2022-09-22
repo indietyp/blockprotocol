@@ -7,6 +7,7 @@ pub(crate) use expressions::pratt::{Affix, Associativity, Precedence};
 
 use crate::{
     error::{Expected, ExpectedError},
+    marker::CompletedMarker,
     parser::Parser,
     token_set::TokenSet,
     SyntaxKind,
@@ -82,12 +83,21 @@ fn name(p: &mut Parser, recovery: TokenSet) {
     }
 }
 
-fn name_ref(p: &mut Parser) {
+fn name_ref_opt(p: &mut Parser) -> Option<CompletedMarker> {
     if p.at(SyntaxKind::Ident) {
         let m = p.start();
+
         p.bump(SyntaxKind::Ident);
-        m.complete(p, SyntaxKind::NameRef);
+
+        let m = m.complete(p, SyntaxKind::NameRef);
+        Some(m)
     } else {
+        None
+    }
+}
+
+fn name_ref(p: &mut Parser) {
+    if name_ref_opt(p).is_none() {
         p.err_and_bump(ExpectedError::report(p.position(), Expected::Ident));
     }
 }

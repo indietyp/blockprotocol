@@ -239,6 +239,10 @@ is = ['trivia']
 [syntax.literal-string-prefix]
 [syntax.literal-string-suffix]
 
+# Explicit reference type
+[syntax.reference-type]
+[syntax.reference-version]
+
 # This identifier is only used for references, other variables use the `_`,
 # otherwise arithmatic would be impossible.
 [syntax.reference-ref]
@@ -302,6 +306,8 @@ composite = ['<', '-']
 shortcut = "<~"
 composite = ['<', '~']
 
+[syntax.latest-kw]
+contextual = "latest"
 [syntax.data-kw]
 contextual = "data"
 [syntax.prop-kw]

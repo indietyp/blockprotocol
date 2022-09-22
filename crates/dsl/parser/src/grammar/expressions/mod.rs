@@ -1,24 +1,21 @@
 use crate::{
     grammar::{expressions::pratt::expr_bp, Precedence},
+    marker::CompletedMarker,
     parser::Parser,
 };
 
 pub(crate) mod atom;
 pub(crate) mod postfix;
 pub(crate) mod pratt;
+mod reference;
 
 // TODO: change how we handle `{}` and blocks!
 // TODO: implement proposal I.3
 
-// for now this is empty
 #[derive(Clone, Copy)]
-pub(crate) struct Restrictions {
-    naked_record: bool,
-}
+pub(crate) struct Restrictions {}
 
-pub(super) fn expr(p: &mut Parser<'_>) -> bool {
-    let r = Restrictions {
-        naked_record: false,
-    };
+pub(super) fn expr(p: &mut Parser) -> bool {
+    let r = Restrictions {};
     expr_bp(p, None, r, Precedence(1)).is_some()
 }
