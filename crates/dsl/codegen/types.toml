@@ -229,9 +229,16 @@ is = ['trivia']
 
 # TODO: use `:` for types instead of the stmt level
 [syntax.union-type]
+
 [syntax.record-type]
-[syntax.record-type-entry]
+[syntax.record-type-field]
+
 [syntax.list-type]
+[syntax.list-type-range]
+[syntax.list-type-range-min]
+[syntax.list-type-range-max]
+[syntax.list-type-range-exact]
+
 [syntax.map-type]
 [syntax.tuple-type]
 

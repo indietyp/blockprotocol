@@ -6,7 +6,6 @@ use crate::{
 pub(crate) mod atom;
 pub(crate) mod postfix;
 pub(crate) mod pratt;
-mod reference;
 
 // TODO: implement proposal I.3
 

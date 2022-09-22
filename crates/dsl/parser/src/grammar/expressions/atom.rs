@@ -2,8 +2,10 @@ use crate::{
     error::{Expected, ExpectedError},
     grammar::{
         attributes,
-        expressions::{expr, reference::ref_expr, Restrictions},
-        paths, BlockLike,
+        expressions::{expr, Restrictions},
+        paths,
+        reference::ref_expr,
+        BlockLike,
     },
     marker::CompletedMarker,
     parser::Parser,
@@ -198,6 +200,8 @@ fn map_expr(p: &mut Parser) -> CompletedMarker {
             p.expect(T![,]);
         }
     }
+
+    p.expect(T!['}']);
 
     m.complete(p, SyntaxKind::MapExpr)
 }

@@ -44,14 +44,13 @@ fn ref_version(p: &mut Parser) -> CompletedMarker {
     if p.at_contextual_kw(SyntaxKind::LatestKw) {
         p.eat(SyntaxKind::Ident);
     } else {
-        // TODO: Natural :o
         p.expect(SyntaxKind::Integer);
     }
 
     m.complete(p, SyntaxKind::ReferenceVersion)
 }
 
-pub(super) fn might_be_ref(p: &Parser) -> bool {
+pub(in crate::grammar) fn might_be_ref(p: &Parser) -> bool {
     p.at_ts(TokenSet::new(&[
         T![@],
         T![#],
@@ -61,7 +60,7 @@ pub(super) fn might_be_ref(p: &Parser) -> bool {
     ]))
 }
 
-pub(super) fn ref_expr(p: &mut Parser) -> Option<CompletedMarker> {
+pub(in crate::grammar) fn ref_expr(p: &mut Parser) -> Option<CompletedMarker> {
     if !might_be_ref(p) {
         return None;
     }

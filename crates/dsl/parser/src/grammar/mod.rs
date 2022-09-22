@@ -2,6 +2,8 @@ mod attributes;
 mod expressions;
 mod items;
 mod paths;
+mod reference;
+mod types;
 
 pub(crate) use expressions::pratt::{Affix, Associativity, Precedence};
 
