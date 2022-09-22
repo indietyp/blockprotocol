@@ -90,6 +90,7 @@ impl DataType {
                 let string = z3::ast::String::new_const(&ctx, 1);
                 let mut constraints = vec![];
 
+                // TODO: this does not work yet!
                 let len = unsafe {
                     FuncDecl::from_raw(&ctx, (&mut DeclKind::SEQ_LENGTH) as *mut DeclKind as *mut _)
                 };
