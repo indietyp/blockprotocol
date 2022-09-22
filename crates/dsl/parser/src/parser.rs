@@ -88,6 +88,10 @@ impl<'t> Parser<'t> {
         true
     }
 
+    pub(crate) fn eof(&self) -> bool {
+        self.at(SyntaxKind::EndOfFile)
+    }
+
     pub(crate) fn at_composite2(&self, n: usize, k1: SyntaxKind, k2: SyntaxKind) -> bool {
         self.inp.kind(self.pos + n) == k1
             && self.inp.kind(self.pos + n + 1) == k2

@@ -211,17 +211,21 @@ is = ['trivia']
 [syntax.alias-entity-item]
 
 [syntax.record-expr]
-[syntax.record-expr-entry]
 [syntax.literal]
+
 [syntax.map-expr]
+[syntax.map-expr-field]
+
 [syntax.list-expr]
 [syntax.paren-expr]
+[syntax.path-expr]
 [syntax.infix-expr]
 [syntax.prefix-expr]
 [syntax.postfix-expr]
 [syntax.tuple-expr]
 [syntax.range-expr]
 [syntax.block-expr]
+[syntax.index-expr]
 
 # TODO: use `:` for types instead of the stmt level
 [syntax.union-type]

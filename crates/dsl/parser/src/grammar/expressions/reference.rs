@@ -51,14 +51,18 @@ fn ref_version(p: &mut Parser) -> CompletedMarker {
     m.complete(p, SyntaxKind::ReferenceVersion)
 }
 
-fn ref_expr(p: &mut Parser) -> Option<CompletedMarker> {
-    if !p.at_ts(TokenSet::new(&[
+pub(super) fn might_be_ref(p: &Parser) -> bool {
+    p.at_ts(TokenSet::new(&[
         T![@],
         T![#],
         T![>],
         T![~],
         SyntaxKind::Ident,
-    ])) {
+    ]))
+}
+
+pub(super) fn ref_expr(p: &mut Parser) -> Option<CompletedMarker> {
+    if !might_be_ref(p) {
         return None;
     }
 

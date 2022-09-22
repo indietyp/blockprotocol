@@ -51,6 +51,7 @@ pub enum Expected {
     Ident,
     String,
     Expr,
+    Reference,
 }
 
 impl Display for Expected {
@@ -61,6 +62,7 @@ impl Display for Expected {
             Self::Ident => f.write_str("identifier"),
             Self::String => f.write_str("string"),
             Self::Expr => f.write_str("expression"),
+            Self::Reference => f.write_str("reference"),
         }
     }
 }
